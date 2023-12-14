@@ -1,0 +1,25 @@
+version: '3'
+
+# app services
+services:
+  # database service
+  db:
+    # custom image with setup database
+    image: postgres:14-alpine
+    # container name
+    env_file:
+      - ./.env
+    container_name: internsheep-postgres
+    # restart app always except when manually stoppped
+    restart: unless-stopped
+    # allow connection with native password
+    ports:
+      - 5432:5432
+    # environment variables
+    environment:
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DATABASE: ${POSTGRES_DATABASE}
+      POSTGRES_USER: ${POSTGRES_USER}
+
+    volumes:
+      - "./db:/var/lib/postgresql/data"
