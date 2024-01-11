@@ -1,11 +1,18 @@
 import AuthProvider from '@/components/AuthProvider'
 import type { Metadata } from 'next'
 import { getServerSession } from 'next-auth/next'
-import { Inter } from 'next/font/google'
 import { authOptions } from './api/auth/[...nextauth]/route'
 import './globals.css'
 
-const inter = Inter({ subsets: ['latin'] })
+import { cn } from '@/lib/utils'
+import { Inter as FontSans } from "next/font/google"
+
+ 
+export const fontSans = FontSans({
+  subsets: ["latin"],
+  variable: "--font-sans",
+})
+
 
 export const metadata: Metadata = {
   title: 'Create Next App',
@@ -23,7 +30,10 @@ export default async function RootLayout({
   return (
     <html lang="en">
       <AuthProvider session={session}>
-        <body className={inter.className}>{children}</body>
+        <body className={cn(
+          "min-h-screen bg-background font-sans antialiased",
+          fontSans.variable
+        )}>{children}</body>
       </AuthProvider>
     </html>
   )

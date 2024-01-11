@@ -1,4 +1,5 @@
 import SignOut from "@/components/SignOut";
+import { Button } from "@/components/ui/button";
 
 export default function Home() {
   return (
@@ -12,6 +13,7 @@ export default function Home() {
           className="w-full max-w-screen-lg aspect-video"
         ></iframe> */}
         <SignOut />
+        <Button>Test</Button>
       </div>
     </div>
   );
