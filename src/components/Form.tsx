@@ -7,6 +7,7 @@ import { useState } from "react";
 
 export default function Form({type}: {type: "login" | "register"}) {
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
   const router = useRouter();
 
   return (
@@ -22,6 +23,7 @@ export default function Form({type}: {type: "login" | "register"}) {
             // @ts-ignore
           }).then(({error}) => {
             if (error) {
+              setError(error);
               setLoading(false);
             } else {
               router.refresh();
@@ -78,6 +80,11 @@ export default function Form({type}: {type: "login" | "register"}) {
           className="mt-1 block w-full appearance-none rounded-md border border-gray-300 px-3 py-2 placeholder-gray-400 shadow-sm focus:border-black focus:outline-none focus:ring-black sm:text-sm"
         />
       </div>
+      {error && (
+        <div className="text-red-500 text-sm">
+          <p>{error}</p>
+        </div>
+      )}
       <button
         disabled={loading}
         className={`${

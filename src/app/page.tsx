@@ -1,5 +1,5 @@
-import SignOut from "@/components/SignOut";
 import { getServerSession } from "next-auth";
+import Link from "next/link";
 
 export default async function Home() {
 
@@ -18,11 +18,10 @@ export default async function Home() {
             This is the home page for the internship project.
           </p>
 
-          <h3 className="text-stone-600 font-bold text-2xl">
-            {session?.user?.email}
-          </h3>
+          <Link href="/protected">
+            <p className="text-stone-600 text-lg">Go to protected page</p>
+          </Link>
 
-          <SignOut />
         </div>
       </div>
     </div>
