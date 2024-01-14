@@ -30,10 +30,6 @@ export default function FormComponent() {
     validateForm();
   };
 
-  useEffect(() => {
-    console.log(formData);
-  }, [formData]);
-
   const validateForm = () => {
     // Validation du formulaire
     if (
@@ -87,11 +83,6 @@ export default function FormComponent() {
     });
     setFormSubmitted(true);
   };
-
-  useEffect(() => {
-    console.log("formData.numberWeeks", formData.numberWeeks);
-    console.log("typeof formData.numberWeeks", typeof formData.numberWeeks);
-  }, [formData.numberWeeks]);
 
   return (
     <div className="h-screen bg-white">
