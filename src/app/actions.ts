@@ -1,7 +1,8 @@
 "use server";
 
 import {PrismaClient} from "@prisma/client";
-import {S3, PutObjectCommand} from "@aws-sdk/client-s3";
+import {S3, PutObjectCommand, GetObjectCommand} from "@aws-sdk/client-s3";
+import {getSignedUrl} from "@aws-sdk/s3-request-presigner";
 const prisma = new PrismaClient();
 
 export const sendForm = async (formData: any) => {
@@ -47,6 +48,9 @@ export const handleDocumentUpload = async (currentState: any, formData: any) => 
 
     try {
       //await s3Client.send(new PutObjectCommand(params));
+      const command = new GetObjectCommand({Bucket: "internsheep-documents", Key: fileName});
+      const url = await getSignedUrl(s3Client, command, {expiresIn: 15 * 60});
+      console.log(url);
       successUploads.push(fileName);
     } catch (error) {
       console.error("Error uploading file:", error);
