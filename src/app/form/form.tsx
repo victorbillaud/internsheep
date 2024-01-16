@@ -2,6 +2,7 @@
 import {useEffect, useState} from "react";
 import form from "./page";
 import {sendForm} from "../actions";
+import UploadDocs from "@/Components/UploadDocs";
 
 export default function FormComponent() {
   const [formSubmitted, setFormSubmitted] = useState(false);
@@ -89,6 +90,7 @@ export default function FormComponent() {
       <h1 className="text-center font-bold pt-8 mb-4 text-black text-3xl ">
         Fomulaire de création
       </h1>
+      <UploadDocs />
 
       <div className="flex flex-col max-w-70  mx-auto my-auto ">
         <form onSubmit={handleSubmit}>
@@ -105,7 +107,7 @@ export default function FormComponent() {
               onChange={handleChange}
               placeholder="Saisir le nom de l'entreprise"
               className="text-black mr-2 p-2 border border-gray-300 rounded bg-gray-200 focus:outline-none focus:border-blue-500"
-              onFocus={()=>setFormSubmitted(false)}
+              onFocus={() => setFormSubmitted(false)}
             />
           </div>
 
@@ -121,48 +123,48 @@ export default function FormComponent() {
               onChange={handleChange}
               placeholder="Saisir description de la mission"
               className="text-black  mr-2 p-2 border border-gray-300 bg-gray-200 rounded resize-none focus:outline-none focus:border-blue-500"
-              onFocus={()=>setFormSubmitted(false)}
-            />
-          </div>
-
-        {/* Nombre de semaines  */}
-        <div className="flex space-x-4 mt-2">
-          <div className="flex flex-col space-y-2 w-1/2">
-            <label htmlFor="numberWeeks" className="text-sm font-medium text-black">
-              Nombre de semaines
-            </label>
-            <input
-              type="number"
-              id="numberWeeks"
-              name="numberWeeks"
-              value={formData.numberWeeks}
-              onChange={handleChange}
-              placeholder="Saisir le nombre de semaines"
-              className="text-black p-2 border border-gray-300 bg-gray-200 rounded focus:outline-none focus:border-blue-500 w-full"
               onFocus={() => setFormSubmitted(false)}
             />
           </div>
 
-          {/* Rémunération */}
-          <div className="flex flex-col space-y-2 w-1/2">
-            <label htmlFor="remuneration" className="text-sm font-medium text-black">
-              Rémunération
-            </label>
-            <input
-              type="number"
-              id="remuneration"
-              name="remuneration"
-              value={formData.remuneration}
-              onChange={handleChange}
-              placeholder="Saisir la rémunération"
-              className="text-black p-2 border border-gray-300 bg-gray-200 rounded focus:outline-none focus:border-blue-500 w-full"
-              onFocus={() => setFormSubmitted(false)}
-            />
-          </div>
-        </div>
+          {/* Nombre de semaines  */}
+          <div className="flex space-x-4 mt-2">
+            <div className="flex flex-col space-y-2 w-1/2">
+              <label htmlFor="numberWeeks" className="text-sm font-medium text-black">
+                Nombre de semaines
+              </label>
+              <input
+                type="number"
+                id="numberWeeks"
+                name="numberWeeks"
+                value={formData.numberWeeks}
+                onChange={handleChange}
+                placeholder="Saisir le nombre de semaines"
+                className="text-black p-2 border border-gray-300 bg-gray-200 rounded focus:outline-none focus:border-blue-500 w-full"
+                onFocus={() => setFormSubmitted(false)}
+              />
+            </div>
 
-        {/* Rythme */}
-        <div className="flex flex-col space-y-2 mt-2">
+            {/* Rémunération */}
+            <div className="flex flex-col space-y-2 w-1/2">
+              <label htmlFor="remuneration" className="text-sm font-medium text-black">
+                Rémunération
+              </label>
+              <input
+                type="number"
+                id="remuneration"
+                name="remuneration"
+                value={formData.remuneration}
+                onChange={handleChange}
+                placeholder="Saisir la rémunération"
+                className="text-black p-2 border border-gray-300 bg-gray-200 rounded focus:outline-none focus:border-blue-500 w-full"
+                onFocus={() => setFormSubmitted(false)}
+              />
+            </div>
+          </div>
+
+          {/* Rythme */}
+          <div className="flex flex-col space-y-2 mt-2">
             <label htmlFor="rythm" className="text-sm font-medium text-black">
               Rythme
             </label>
@@ -172,7 +174,7 @@ export default function FormComponent() {
               value={formData.rythm}
               onChange={handleChange}
               className="text-black p-2 border border-gray-300 bg-gray-200 rounded focus:outline-none focus:border-blue-500"
-              onFocus={()=>setFormSubmitted(false)}
+              onFocus={() => setFormSubmitted(false)}
             >
               <option value="full-time">Temps plein</option>
               <option value="part-time">Temps partiel</option>
@@ -192,7 +194,7 @@ export default function FormComponent() {
                 value={formData.startDate}
                 onChange={handleChange}
                 className="text-black p-2 border border-gray-300 bg-gray-200 rounded focus:outline-none focus:border-blue-500 w-100"
-                onFocus={()=>setFormSubmitted(false)}
+                onFocus={() => setFormSubmitted(false)}
               />
             </div>
 
@@ -208,7 +210,7 @@ export default function FormComponent() {
                 value={formData.endDate}
                 onChange={handleChange}
                 className="text-black p-2 border border-gray-300 bg-gray-200 rounded focus:outline-none focus:border-blue-500 w-100"
-                onFocus={()=>setFormSubmitted(false)}
+                onFocus={() => setFormSubmitted(false)}
               />
             </div>
           </div>
@@ -231,7 +233,9 @@ export default function FormComponent() {
 
           <div>
             {formSubmitted && (
-              <p className="text-green-500 text-center font-bold mt-4">Le formulaire a bien été envoyé !</p>
+              <p className="text-green-500 text-center font-bold mt-4">
+                Le formulaire a bien été envoyé !
+              </p>
             )}
 
             {error && (
