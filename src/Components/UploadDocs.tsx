@@ -96,6 +96,3 @@ export default function UploadDocs() {
     </form>
   );
 }
-function usedEffect(arg0: () => void, arg1: ({status: string; message: string} | null)[]) {
-  throw new Error("Function not implemented.");
-}
