@@ -43,7 +43,7 @@ export function LoginForm() {
         setLoading(false);
       } else {
         router.refresh();
-        router.push("/protected");
+        router.push("/dashboard");
       }
     });
   }

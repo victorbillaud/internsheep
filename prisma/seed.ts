@@ -4,7 +4,7 @@ const prisma = new PrismaClient();
 async function main() {
   const admin = await prisma.user.create({
     data: {
-      email: "bob@prisma.io",
+      email: "admin@example.com",
       firstname: "Admin",
       lastname: "Admin",
       password: await hash("admin", 10),
