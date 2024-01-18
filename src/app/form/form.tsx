@@ -1,250 +1,250 @@
 "use client";
-import {useEffect, useState} from "react";
-import form from "./page";
-import {sendForm} from "../actions";
-import UploadDocs from "@/Components/UploadDocs";
+import {useSearchParams} from "next/navigation";
+import {useRef, useState} from "react";
+import {sendForm} from "./actions";
+import * as z from "zod";
+import {zodResolver} from "@hookform/resolvers/zod";
+import {useForm} from "react-hook-form";
+import {
+  Form,
+  FormControl,
+  FormDescription,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage
+} from "@/components/ui/form";
+import {Input} from "@/components/ui/input";
+import {Button} from "@/components/ui/button";
+import {Popover, PopoverContent, PopoverTrigger} from "@/components/ui/popover";
+import {cn} from "@/lib/utils";
+import {Calendar} from "@/components/ui/calendar";
+import {Calendar as CalendarIcon} from "lucide-react";
+import {format} from "date-fns";
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectLabel,
+  SelectTrigger,
+  SelectValue
+} from "@/components/ui/select";
+
+const formSchema = z.object({
+  companyName: z.string().min(1),
+  mission: z.string().min(1),
+  numberWeeks: z.number().min(1),
+  remuneration: z.number().min(1),
+  rythm: z.enum(["full-time", "part-time"]),
+  startDate: z.date(),
+  endDate: z.date()
+});
 
 export default function FormComponent() {
   const [formSubmitted, setFormSubmitted] = useState(false);
-  const [error, setError] = useState(null);
-  const [isNotFormValid, setIsNotFormValid] = useState(true);
 
-  const [formData, setFormData] = useState({
-    companyName: "",
-    mission: "",
-    startDate: new Date().toISOString(),
-    endDate: new Date().toISOString(),
-    rythm: "full-time",
-    numberWeeks: 0,
-    remuneration: 0
-  });
-
-  const handleChange = (
-    event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
-  ) => {
-    const {name, value} = event.target;
-
-    // Vérifier si la valeur peut être convertie en nombre
-    const parsedValue = !isNaN(Number(value)) ? Number(value) : value;
-
-    setFormData({...formData, [name]: parsedValue});
-    validateForm();
+  type CustomError = {
+    code: string;
+    message: string;
   };
 
-  const validateForm = () => {
-    // Validation du formulaire
-    if (
-      !formData.companyName ||
-      !formData.mission ||
-      !formData.rythm ||
-      formData.numberWeeks <= 0 ||
-      formData.remuneration <= 0 ||
-      !formData.startDate ||
-      !formData.endDate
-    ) {
-      setIsNotFormValid(true);
-    } else {
-      setIsNotFormValid(false);
-    }
-  };
+  const searchParams = useSearchParams();
+
+  const error = searchParams.get("error") as unknown as CustomError;
+
+  const formRef = useRef<HTMLFormElement>(null);
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
+    const formData = new FormData(formRef.current);
 
-    // Validation du formulaire
-    validateForm();
+    console.log("formData", formData);
 
-    if (formSubmitted) {
-      return;
-    }
-    if (isNotFormValid) {
-      return; // Arrêter l'envoi du formulaire si invalide
-    }
-
-    try {
-      await sendForm(formData);
-      resetForm();
-      setFormSubmitted(true);
-      setError(null);
-    } catch (error) {
-      console.error("Error submitting form:", error);
-      setFormSubmitted(false);
-    }
+    sendForm();
   };
 
-  const resetForm = () => {
-    setFormData({
+  const form = useForm<z.infer<typeof formSchema>>({
+    resolver: zodResolver(formSchema),
+    defaultValues: {
       companyName: "",
       mission: "",
-      startDate: new Date().toISOString(),
-      endDate: new Date().toISOString(),
-      rythm: "full-time",
       numberWeeks: 0,
-      remuneration: 0
-    });
-    setFormSubmitted(true);
-  };
+      remuneration: 0,
+      rythm: "full-time",
+      startDate: new Date(),
+      endDate: new Date()
+    }
+  });
+
+  // 2. Define a submit handler.
+  function onSubmit(values: z.infer<typeof formSchema>) {}
 
   return (
     <div className="h-screen bg-white">
-      <h1 className="text-center font-bold pt-8 mb-4 text-black text-3xl ">
-        Fomulaire de création
-      </h1>
-      <UploadDocs />
+      <div className="flex flex-col space-y-2 text-center mt-6">
+        <h1 className="text-2xl font-semibold tracking-tight">Add an internship</h1>
+        <UploadDocs />
+        <p className="text-sm text-muted-foreground">Enter the details of your internship below</p>
+      </div>
 
       <div className="flex flex-col max-w-70  mx-auto my-auto ">
-        <form onSubmit={handleSubmit}>
-          {/* Nom de l'entreprise */}
-          <div className="flex flex-col space-y-2 mt-2">
-            <label htmlFor="companyName" className="text-sm font-medium text-black">
-              Nom de l'entreprise
-            </label>
-            <input
-              type="text"
-              id="companyName"
-              name="companyName"
-              value={formData.companyName}
-              onChange={handleChange}
-              placeholder="Saisir le nom de l'entreprise"
-              className="text-black mr-2 p-2 border border-gray-300 rounded bg-gray-200 focus:outline-none focus:border-blue-500"
-              onFocus={() => setFormSubmitted(false)}
-            />
-          </div>
+        {error && <p className="text-red-500 text-center font-bold mt-2">{error}</p>}
 
-          {/* mission du stage */}
-          <div className="flex flex-col space-y-2 mt-2">
-            <label htmlFor="internshipMission" className="text-sm font-medium text-black">
-              Mission du stage
-            </label>
-            <textarea
-              id="internshipMission"
-              name="mission"
-              value={formData.mission}
-              onChange={handleChange}
-              placeholder="Saisir description de la mission"
-              className="text-black  mr-2 p-2 border border-gray-300 bg-gray-200 rounded resize-none focus:outline-none focus:border-blue-500"
-              onFocus={() => setFormSubmitted(false)}
-            />
-          </div>
-
-          {/* Nombre de semaines  */}
-          <div className="flex space-x-4 mt-2">
-            <div className="flex flex-col space-y-2 w-1/2">
-              <label htmlFor="numberWeeks" className="text-sm font-medium text-black">
-                Nombre de semaines
-              </label>
-              <input
-                type="number"
-                id="numberWeeks"
-                name="numberWeeks"
-                value={formData.numberWeeks}
-                onChange={handleChange}
-                placeholder="Saisir le nombre de semaines"
-                className="text-black p-2 border border-gray-300 bg-gray-200 rounded focus:outline-none focus:border-blue-500 w-full"
-                onFocus={() => setFormSubmitted(false)}
-              />
-            </div>
-
-            {/* Rémunération */}
-            <div className="flex flex-col space-y-2 w-1/2">
-              <label htmlFor="remuneration" className="text-sm font-medium text-black">
-                Rémunération
-              </label>
-              <input
-                type="number"
-                id="remuneration"
-                name="remuneration"
-                value={formData.remuneration}
-                onChange={handleChange}
-                placeholder="Saisir la rémunération"
-                className="text-black p-2 border border-gray-300 bg-gray-200 rounded focus:outline-none focus:border-blue-500 w-full"
-                onFocus={() => setFormSubmitted(false)}
-              />
-            </div>
-          </div>
-
-          {/* Rythme */}
-          <div className="flex flex-col space-y-2 mt-2">
-            <label htmlFor="rythm" className="text-sm font-medium text-black">
-              Rythme
-            </label>
-            <select
-              id="rythm"
-              name="rythm"
-              value={formData.rythm}
-              onChange={handleChange}
-              className="text-black p-2 border border-gray-300 bg-gray-200 rounded focus:outline-none focus:border-blue-500"
-              onFocus={() => setFormSubmitted(false)}
-            >
-              <option value="full-time">Temps plein</option>
-              <option value="part-time">Temps partiel</option>
-            </select>
-          </div>
-
-          {/* Date de début */}
-          <div className="flex space-x-4 mt-2">
-            <div className="flex flex-col space-y-2 w-1/2">
-              <label htmlFor="startDate" className="text-sm font-medium text-black">
-                Date de début
-              </label>
-              <input
-                type="date"
-                id="startDate"
-                name="startDate"
-                value={formData.startDate}
-                onChange={handleChange}
-                className="text-black p-2 border border-gray-300 bg-gray-200 rounded focus:outline-none focus:border-blue-500 w-100"
-                onFocus={() => setFormSubmitted(false)}
-              />
-            </div>
-
-            {/* Date de fin */}
-            <div className="flex flex-col space-y-2 w-1/2">
-              <label htmlFor="endDate" className="text-sm font-medium text-black">
-                Date de fin
-              </label>
-              <input
-                type="date"
-                id="endDate"
-                name="endDate"
-                value={formData.endDate}
-                onChange={handleChange}
-                className="text-black p-2 border border-gray-300 bg-gray-200 rounded focus:outline-none focus:border-blue-500 w-100"
-                onFocus={() => setFormSubmitted(false)}
-              />
-            </div>
-          </div>
-
-          <button
-            type="submit"
-            className={`mt-4 mb-4 flex flex-col bg-blue-500 text-white font-bold py-2 px-4 rounded m-auto ${
-              isNotFormValid ? "opacity-50 cursor-not-allowed bg-blue-200 " : "hover:bg-blue-700"
-            }`}
-            disabled={isNotFormValid}
+        <Form {...form}>
+          <form
+            onSubmit={form.handleSubmit(onSubmit)}
+            className="space-y-4 w-1/2 p-2 mx-auto items-center"
           >
-            Soumettre le formulaire
-          </button>
+            <FormField
+              control={form.control}
+              name="companyName"
+              render={({field}) => (
+                <FormItem>
+                  <FormLabel>Company name</FormLabel>
+                  <FormControl>
+                    <Input placeholder="example : Google, Apple...." {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="mission"
+              render={({field}) => (
+                <FormItem>
+                  <FormLabel>Mission</FormLabel>
+                  <FormControl>
+                    <Input placeholder="example : developper full stack" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="numberWeeks"
+              render={({field}) => (
+                <FormItem>
+                  <FormLabel>Number of Weeks</FormLabel>
+                  <FormControl>
+                    <Input type="number" placeholder="exemple : 20 weeks  " {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="remuneration"
+              render={({field}) => (
+                <FormItem>
+                  <FormLabel>Salary</FormLabel>
+                  <FormControl>
+                    <Input type="number" placeholder="example : 1500€" {...field} />
+                  </FormControl>
+                  <FormDescription>This is the remuneration without taxes.</FormDescription>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormItem className="flex justify-center flex-col">
+              <FormLabel>Rythm</FormLabel>
+              <Select>
+                <SelectTrigger>
+                  <SelectValue placeholder="Select a rythm" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectGroup>
+                    <SelectItem value="full-time">Full-time</SelectItem>
+                    <SelectItem value="part-time">Part-time</SelectItem>
+                  </SelectGroup>
+                </SelectContent>
+              </Select>
+              <FormDescription>Full-time or Part-time</FormDescription>
+            </FormItem>
 
-          {isNotFormValid && (
-            <p className="text-red-500 text-center font-bold mt-4">
-              Le formulaire n'est pas rempli correctement. Veuillez remplir tous les champs.
-            </p>
-          )}
-
-          <div>
-            {formSubmitted && (
-              <p className="text-green-500 text-center font-bold mt-4">
-                Le formulaire a bien été envoyé !
-              </p>
-            )}
-
+            <div className="flex flex-row justify-center space-x-20">
+              <FormField
+                control={form.control}
+                name="startDate"
+                render={({field}) => (
+                  <FormItem className="flex flex-col w-1/3">
+                    <FormLabel>Start date</FormLabel>
+                    <Popover>
+                      <PopoverTrigger asChild>
+                        <FormControl>
+                          <Button
+                            variant={"outline"}
+                            className={cn(
+                              "w-[240px] pl-3 text-left font-normal",
+                              !field.value && "text-muted-foreground"
+                            )}
+                          >
+                            {field.value ? format(field.value, "PPP") : <span>Pick a date</span>}
+                            <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                          </Button>
+                        </FormControl>
+                      </PopoverTrigger>
+                      <PopoverContent className="w-auto p-0" align="start">
+                        <Calendar
+                          mode="single"
+                          selected={field.value}
+                          onSelect={field.onChange}
+                          initialFocus
+                        />
+                      </PopoverContent>
+                    </Popover>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="endDate"
+                render={({field}) => (
+                  <FormItem className="flex flex-col w-1/3">
+                    <FormLabel>End date</FormLabel>
+                    <Popover>
+                      <PopoverTrigger asChild>
+                        <FormControl>
+                          <Button
+                            variant={"outline"}
+                            className={cn(
+                              "w-[240px] pl-3 text-left font-normal",
+                              !field.value && "text-muted-foreground"
+                            )}
+                          >
+                            {field.value ? format(field.value, "PPP") : <span>Pick a date</span>}
+                            <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                          </Button>
+                        </FormControl>
+                      </PopoverTrigger>
+                      <PopoverContent className="w-auto p-0" align="start">
+                        <Calendar
+                          mode="single"
+                          selected={field.value}
+                          onSelect={field.onChange}
+                          initialFocus
+                        />
+                      </PopoverContent>
+                    </Popover>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
             {error && (
-              <p className="text-red-500 text-center font-bold mt-4">
-                Il y a eu une erreur lors de l'envoi du formulaire
-              </p>
+              <div className="text-red-500 text-sm">
+                <p>{error}</p>
+              </div>
             )}
-          </div>
-        </form>
+
+            <Button className="flex text-center mx-auto mt-4" type="submit">
+              Submit
+            </Button>
+          </form>
+        </Form>
       </div>
     </div>
   );
