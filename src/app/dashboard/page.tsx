@@ -3,18 +3,9 @@ import { Button } from "@/components/ui/button";
 
 export default function Home() {
   return (
-    <div className="flex h-screen bg-black">
-      <div className="w-screen h-screen flex flex-col space-y-5 justify-center items-center">
-        {/* <iframe
-          src="https://www.youtube.com/embed/dQw4w9WgXcQ?autoplay=1"
-          title="YouTube video player"
-          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-          allowFullScreen
-          className="w-full max-w-screen-lg aspect-video"
-        ></iframe> */}
-        <SignOut />
-        <Button>Test</Button>
-      </div>
+    <div className="flex h-full">
+      <SignOut />
+      <Button>Test</Button>
     </div>
   );
 }
