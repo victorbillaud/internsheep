@@ -31,7 +31,8 @@ export function RegisterForm() {
  
   // 2. Define a submit handler.
   function onSubmit(values: z.infer<typeof formSchema>) {
-    fetch("/api/auth/auth/register", {
+    console.log(values);
+    fetch("/api/auth/register", {
         method: "POST",
         headers: {
             "Content-Type": "application/json"
