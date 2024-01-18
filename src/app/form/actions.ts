@@ -4,39 +4,28 @@ import { PrismaClient } from "@prisma/client";
 import { redirect } from "next/navigation";
 const prisma = new PrismaClient();
 
-class CustomError extends Error {
-  code: string;
-
-  constructor(msg: string, code: string) {
-    super(msg);
-    this.code = code;
-  }
+interface InternshipData {
+  companyName: string;
+  mission: string; 
+  numberWeeks: number;
+  remuneration: number;
+  rythm: "full-time" | "part-time";
+  startDate: string; // date au format ISO
+  endDate: string; // date au format ISO
 }
 
-export async function sendForm() {
-  console.log("_______________________formData________________________", formData);
-
-  // Validation du formulaire côté serveur
-  if (
-    !formData.companyName ||
-    !formData.mission ||
-    !formData.rythm ||
-    formData.numberWeeks <= 0 ||
-    formData.remuneration <= 0 ||
-    !formData.startDate ||
-    !formData.endDate
-  ) {
-    console.log("Formulaire invalide");
-    redirect("/form?error=invalidForm");
-  }
+export async function sendForm(internshipData: InternshipData) {
 
   try {
     const result = await prisma.internship.create({
-      data: formData
+      data: internshipData
     });
     console.log("Internship created:", result);
+
   } catch (error) {
-    console.error("Error creating internship:", error);
-    redirect("/form?error=creatinIntership")
+    console.error("Error creating internship:", error)
+    redirect("/form?error=Error creatin intership")
   }
+
+  redirect("/");
 }

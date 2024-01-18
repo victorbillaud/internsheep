@@ -1,6 +1,6 @@
 "use client";
+
 import { useSearchParams } from "next/navigation";
-import { useRef, useState } from "react";
 import { sendForm } from "./actions";
 import * as z from "zod"
 import { zodResolver } from "@hookform/resolvers/zod"
@@ -8,58 +8,36 @@ import { useForm } from "react-hook-form"
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover"
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import { cn } from "@/lib/utils";
 import { Calendar } from "@/components/ui/calendar"
 import { Calendar as CalendarIcon } from "lucide-react"
 import { format } from "date-fns"
-import {
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectLabel,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select"
+import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 
 const formSchema = z.object({
   companyName: z.string().min(1),
   mission: z.string().min(1),
-  numberWeeks: z.number().min(1),
-  remuneration: z.number().min(1),
+  numberWeeks: z.coerce.number().min(1).refine(value => !isNaN(value), {
+    message: "Must be a number"
+  }),
+  remuneration: z.coerce.number().min(1).refine(value => !isNaN(value), {
+    message: "Must be a number"
+  }),
   rythm: z.enum(["full-time", "part-time"]),
   startDate: z.date(),
   endDate: z.date(),
 })
 
 export default function FormComponent() {
-  const [formSubmitted, setFormSubmitted] = useState(false);
 
-  type CustomError = {
-    code: string;
-    message: string;
-  };
-
+  // getting the error and success message from the url
   const searchParams = useSearchParams();
+  const error = searchParams.get("error") as unknown as string;
+  const success = searchParams.get("success") as unknown as string;
 
-  const error = searchParams.get("error") as unknown as CustomError;
 
-
-  const formRef = useRef<HTMLFormElement>(null);
-
-  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
-    const formData = new FormData(formRef.current);
-
-    console.log("formData", formData);
-
-    sendForm();
-  };
-
+  // initializing the form
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -73,9 +51,14 @@ export default function FormComponent() {
     },
   })
 
-  // 2. Define a submit handler.
   function onSubmit(values: z.infer<typeof formSchema>) {
-
+    const { startDate, endDate, ...internshipData } = values;
+  
+    sendForm({
+      ...internshipData, 
+      startDate: startDate.toISOString().split('T')[0],
+      endDate: endDate.toISOString().split('T')[0]
+    });
   }
 
   return (
@@ -90,7 +73,6 @@ export default function FormComponent() {
       </div>
 
       <div className="flex flex-col max-w-70  mx-auto my-auto ">
-        {error && <p className="text-red-500 text-center font-bold mt-2">{error}</p>}
 
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 w-1/2 p-2 mx-auto items-center">
@@ -166,8 +148,8 @@ export default function FormComponent() {
                 Full-time or Part-time
               </FormDescription>
             </FormItem>
-            
-            <div className="flex flex-row justify-center space-x-20">
+
+            <div className="flex flex-row justify-center space-x-20 flex-wrap mx-auto">
               <FormField
                 control={form.control}
                 name="startDate"
@@ -246,13 +228,8 @@ export default function FormComponent() {
                 )}
               />
             </div>
-            {error && (
-              <div className="text-red-500 text-sm">
-                <p>{error}</p>
-              </div>
-            )}
-
-
+            {error && <p className="text-red-500 text-center font-bold mt-2">{error}</p>}
+            {success && <p className="text-green-500 text-center font-bold mt-2">{success}</p>}
 
             <Button className="flex text-center mx-auto mt-4" type="submit">Submit</Button>
           </form>
