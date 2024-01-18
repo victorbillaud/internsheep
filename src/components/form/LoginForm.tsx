@@ -13,7 +13,7 @@ import { Input } from "../ui/input";
  
 const formSchema = z.object({
   email: z.string().email(),
-  password: z.string().min(8),
+  password: z.string().min(5),
 })
 
 export function LoginForm() {
