@@ -21,7 +21,7 @@
 //       status: 500,
 //       body: JSON.stringify({
 //         error: {
-//           code: 'INTERNAL_ERROR', 
+//           code: 'INTERNAL_ERROR',
 //           message: "Le formulaire n'est pas rempli correctement. Veuillez remplir tous les champs."
 //         }
 //       })
@@ -40,7 +40,7 @@
 //       status: 500,
 //       body: JSON.stringify({
 //         error: {
-//           code: '500', 
+//           code: '500',
 //           message: 'Internal Server Error'
 //         }
 //       })
@@ -55,14 +55,14 @@
 "use server";
 
 import { PrismaClient } from "@prisma/client";
-import { error } from "console";
+import { redirect } from "next/navigation";
 const prisma = new PrismaClient();
 
 class CustomError extends Error {
   code: string;
 
   constructor(msg: string, code: string) {
-    super(msg); 
+    super(msg);
     this.code = code;
   }
 }
@@ -80,8 +80,8 @@ export async function sendForm(formData: any) {
     !formData.startDate ||
     !formData.endDate
   ) {
-    console.log('Formulaire invalide')
-    return {message: "Le formulaire n'est pas rempli correctement. Veuillez remplir tous les champs."}
+    console.log("Formulaire invalide");
+    redirect("/form?error=Formulaire invalide");
   }
 
   try {
@@ -92,6 +92,6 @@ export async function sendForm(formData: any) {
     // return result;
   } catch (error) {
     console.error("Error creating internship:", error);
-    return {message: 'Internal Server Error'}
+    return {message: "Internal Server Error"};
   }
 }
