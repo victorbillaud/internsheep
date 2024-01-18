@@ -30,6 +30,7 @@ import {
   SelectTrigger,
   SelectValue
 } from "@/components/ui/select";
+import UploadDocs from "@/components/UploadDocs";
 
 const formSchema = z.object({
   companyName: z.string().min(1),
@@ -56,17 +57,7 @@ export default function FormComponent() {
   // getting the error and success message from the url
   const searchParams = useSearchParams();
 
-  const error = searchParams.get("error") as unknown as CustomError;
-
   const formRef = useRef<HTMLFormElement>(null);
-
-  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
-    const formData = new FormData(formRef.current);
-
-    console.log("formData", formData);
-
-    sendForm();
-  };
 
   const error = searchParams.get("error") as unknown as string;
   const success = searchParams.get("success") as unknown as string;
@@ -177,6 +168,7 @@ export default function FormComponent() {
               </Select>
               <FormDescription>Full-time or Part-time</FormDescription>
             </FormItem>
+            <UploadDocs control={form.control} name="files" />
 
             <div className="flex flex-row justify-center space-x-20">
               <FormField

@@ -1,7 +1,22 @@
+import {useRef} from "react";
+import {useController} from "react-hook-form";
 import {Input} from "./ui/input";
 import {FormControl, FormItem, FormLabel, FormMessage} from "./ui/form";
 
-export default function UploadDocs({field}: {field: File | undefined}) {
+export default function UploadDocs({control, name}) {
+  const {
+    field: {onChange, onBlur},
+    fieldState: {error}
+  } = useController({
+    name,
+    control
+  });
+
+  const handleFilesChange = (e) => {
+    const files = Array.from(e.target.files);
+    onChange(files); // Update react-hook-form with the new files
+  };
+
   return (
     <FormItem>
       <FormLabel>Upload your documents</FormLabel>
@@ -12,10 +27,11 @@ export default function UploadDocs({field}: {field: File | undefined}) {
           name="input-file-upload"
           multiple
           accept=".pdf, .jpg, .jpeg, .png, .txt"
-          {...field}
+          onChange={handleFilesChange}
+          onBlur={onBlur}
         />
       </FormControl>
-      <FormMessage />
+      {error && <FormMessage>{error.message}</FormMessage>}
     </FormItem>
   );
 }
