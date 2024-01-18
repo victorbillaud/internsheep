@@ -30,6 +30,9 @@ import {
   SelectTrigger,
   SelectValue
 } from "@/components/ui/select";
+import UploadDocs from "@/components/UploadDocs";
+
+const fileSchema = z.instanceof(File).optional();
 
 const formSchema = z.object({
   companyName: z.string().min(1),
@@ -37,6 +40,7 @@ const formSchema = z.object({
   numberWeeks: z.number().min(1),
   remuneration: z.number().min(1),
   rythm: z.enum(["full-time", "part-time"]),
+  files: z.array(z.instanceof(File).optional()),
   startDate: z.date(),
   endDate: z.date()
 });
@@ -71,6 +75,7 @@ export default function FormComponent() {
       numberWeeks: 0,
       remuneration: 0,
       rythm: "full-time",
+      files: [],
       startDate: new Date(),
       endDate: new Date()
     }
@@ -83,7 +88,6 @@ export default function FormComponent() {
     <div className="h-screen bg-white">
       <div className="flex flex-col space-y-2 text-center mt-6">
         <h1 className="text-2xl font-semibold tracking-tight">Add an internship</h1>
-        <UploadDocs />
         <p className="text-sm text-muted-foreground">Enter the details of your internship below</p>
       </div>
 
@@ -163,7 +167,11 @@ export default function FormComponent() {
               </Select>
               <FormDescription>Full-time or Part-time</FormDescription>
             </FormItem>
-
+            <FormField
+              control={form.control}
+              name="files"
+              render={({field}) => <UploadDocs field={field} />}
+            ></FormField>
             <div className="flex flex-row justify-center space-x-20">
               <FormField
                 control={form.control}
