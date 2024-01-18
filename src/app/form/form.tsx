@@ -2,11 +2,26 @@
 import {useEffect, useState} from "react";
 import form from "./page";
 import {sendForm} from "../actions";
+import {getRedirectStatusCodeFromError} from "next/dist/client/components/redirect";
+import { Response } from 'node-fetch';
+import { useFormState, useFormStatus } from "react-dom";
 
 export default function FormComponent() {
   const [formSubmitted, setFormSubmitted] = useState(false);
-  const [error, setError] = useState(null);
-  const [isNotFormValid, setIsNotFormValid] = useState(true);
+
+  const initialState = {
+    message: '',
+  }
+
+  const { pending } = useFormStatus();
+  const [state, formAction] = useFormState(sendForm, initialState)
+  
+  type CustomError = {
+    code: string;
+    message: string;
+  };
+  
+  const [error, setError] = useState<CustomError | null>(null);
 
   const [formData, setFormData] = useState({
     companyName: "",
@@ -27,71 +42,54 @@ export default function FormComponent() {
     const parsedValue = !isNaN(Number(value)) ? Number(value) : value;
 
     setFormData({...formData, [name]: parsedValue});
-    validateForm();
-  };
-
-  const validateForm = () => {
-    // Validation du formulaire
-    if (
-      !formData.companyName ||
-      !formData.mission ||
-      !formData.rythm ||
-      formData.numberWeeks <= 0 ||
-      formData.remuneration <= 0 ||
-      !formData.startDate ||
-      !formData.endDate
-    ) {
-      setIsNotFormValid(true);
-    } else {
-      setIsNotFormValid(false);
-    }
   };
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
-    // Validation du formulaire
-    validateForm();
-
-    if (formSubmitted) {
-      return;
-    }
-    if (isNotFormValid) {
-      return; // Arrêter l'envoi du formulaire si invalide
-    }
-
     try {
       await sendForm(formData);
-      resetForm();
       setFormSubmitted(true);
       setError(null);
-    } catch (error) {
-      console.error("Error submitting form:", error);
+
+    }catch(error) {
+
+      console.log('catch')
+
       setFormSubmitted(false);
+
+      console.log('error____', error != null)
+      console.log('Internal_error', (error as CustomError).code == 'INTERNAL_ERROR')
+      console.log('Invalid Form', (error as CustomError).code == 'INVALID_FORM')
+      console.log('(error as CustomError).code', (error as CustomError).code)
+
+
+      if (error && (error as CustomError).code == 'INTERNAL_ERROR') {
+        setError(error as CustomError);
+      } else if (error && (error as CustomError).code == 'INVALID_FORM') {
+        setError(error as CustomError);
+      } else {
+        setError({
+          code: 'UNEXPECTED_ERROR',
+          message: 'Une erreur inattendue s\'est produite lors de l\'envoi du formulaire.'
+        });
+      }
     }
   };
 
-  const resetForm = () => {
-    setFormData({
-      companyName: "",
-      mission: "",
-      startDate: new Date().toISOString(),
-      endDate: new Date().toISOString(),
-      rythm: "full-time",
-      numberWeeks: 0,
-      remuneration: 0
-    });
-    setFormSubmitted(true);
-  };
+  useEffect(() => {
+    console.log('state', state)
+  }, [state])
+  
 
   return (
     <div className="h-screen bg-white">
       <h1 className="text-center font-bold pt-8 mb-4 text-black text-3xl ">
-        Fomulaire de création
+        Formulaire de création
       </h1>
 
       <div className="flex flex-col max-w-70  mx-auto my-auto ">
-        <form onSubmit={handleSubmit}>
+        <form action={formAction} onSubmit={handleSubmit}>
           {/* Nom de l'entreprise */}
           <div className="flex flex-col space-y-2 mt-2">
             <label htmlFor="companyName" className="text-sm font-medium text-black">
@@ -105,7 +103,7 @@ export default function FormComponent() {
               onChange={handleChange}
               placeholder="Saisir le nom de l'entreprise"
               className="text-black mr-2 p-2 border border-gray-300 rounded bg-gray-200 focus:outline-none focus:border-blue-500"
-              onFocus={()=>setFormSubmitted(false)}
+              onFocus={() => setFormSubmitted(false)}
             />
           </div>
 
@@ -121,48 +119,48 @@ export default function FormComponent() {
               onChange={handleChange}
               placeholder="Saisir description de la mission"
               className="text-black  mr-2 p-2 border border-gray-300 bg-gray-200 rounded resize-none focus:outline-none focus:border-blue-500"
-              onFocus={()=>setFormSubmitted(false)}
-            />
-          </div>
-
-        {/* Nombre de semaines  */}
-        <div className="flex space-x-4 mt-2">
-          <div className="flex flex-col space-y-2 w-1/2">
-            <label htmlFor="numberWeeks" className="text-sm font-medium text-black">
-              Nombre de semaines
-            </label>
-            <input
-              type="number"
-              id="numberWeeks"
-              name="numberWeeks"
-              value={formData.numberWeeks}
-              onChange={handleChange}
-              placeholder="Saisir le nombre de semaines"
-              className="text-black p-2 border border-gray-300 bg-gray-200 rounded focus:outline-none focus:border-blue-500 w-full"
               onFocus={() => setFormSubmitted(false)}
             />
           </div>
 
-          {/* Rémunération */}
-          <div className="flex flex-col space-y-2 w-1/2">
-            <label htmlFor="remuneration" className="text-sm font-medium text-black">
-              Rémunération
-            </label>
-            <input
-              type="number"
-              id="remuneration"
-              name="remuneration"
-              value={formData.remuneration}
-              onChange={handleChange}
-              placeholder="Saisir la rémunération"
-              className="text-black p-2 border border-gray-300 bg-gray-200 rounded focus:outline-none focus:border-blue-500 w-full"
-              onFocus={() => setFormSubmitted(false)}
-            />
-          </div>
-        </div>
+          {/* Nombre de semaines  */}
+          <div className="flex space-x-4 mt-2">
+            <div className="flex flex-col space-y-2 w-1/2">
+              <label htmlFor="numberWeeks" className="text-sm font-medium text-black">
+                Nombre de semaines
+              </label>
+              <input
+                type="number"
+                id="numberWeeks"
+                name="numberWeeks"
+                value={formData.numberWeeks}
+                onChange={handleChange}
+                placeholder="Saisir le nombre de semaines"
+                className="text-black p-2 border border-gray-300 bg-gray-200 rounded focus:outline-none focus:border-blue-500 w-full"
+                onFocus={() => setFormSubmitted(false)}
+              />
+            </div>
 
-        {/* Rythme */}
-        <div className="flex flex-col space-y-2 mt-2">
+            {/* Rémunération */}
+            <div className="flex flex-col space-y-2 w-1/2">
+              <label htmlFor="remuneration" className="text-sm font-medium text-black">
+                Rémunération
+              </label>
+              <input
+                type="number"
+                id="remuneration"
+                name="remuneration"
+                value={formData.remuneration}
+                onChange={handleChange}
+                placeholder="Saisir la rémunération"
+                className="text-black p-2 border border-gray-300 bg-gray-200 rounded focus:outline-none focus:border-blue-500 w-full"
+                onFocus={() => setFormSubmitted(false)}
+              />
+            </div>
+          </div>
+
+          {/* Rythme */}
+          <div className="flex flex-col space-y-2 mt-2">
             <label htmlFor="rythm" className="text-sm font-medium text-black">
               Rythme
             </label>
@@ -172,7 +170,7 @@ export default function FormComponent() {
               value={formData.rythm}
               onChange={handleChange}
               className="text-black p-2 border border-gray-300 bg-gray-200 rounded focus:outline-none focus:border-blue-500"
-              onFocus={()=>setFormSubmitted(false)}
+              onFocus={() => setFormSubmitted(false)}
             >
               <option value="full-time">Temps plein</option>
               <option value="part-time">Temps partiel</option>
@@ -192,7 +190,7 @@ export default function FormComponent() {
                 value={formData.startDate}
                 onChange={handleChange}
                 className="text-black p-2 border border-gray-300 bg-gray-200 rounded focus:outline-none focus:border-blue-500 w-100"
-                onFocus={()=>setFormSubmitted(false)}
+                onFocus={() => setFormSubmitted(false)}
               />
             </div>
 
@@ -208,37 +206,43 @@ export default function FormComponent() {
                 value={formData.endDate}
                 onChange={handleChange}
                 className="text-black p-2 border border-gray-300 bg-gray-200 rounded focus:outline-none focus:border-blue-500 w-100"
-                onFocus={()=>setFormSubmitted(false)}
+                onFocus={() => setFormSubmitted(false)}
               />
             </div>
           </div>
 
           <button
             type="submit"
-            className={`mt-4 mb-4 flex flex-col bg-blue-500 text-white font-bold py-2 px-4 rounded m-auto ${
-              isNotFormValid ? "opacity-50 cursor-not-allowed bg-blue-200 " : "hover:bg-blue-700"
-            }`}
-            disabled={isNotFormValid}
+            className={`mt-4 mb-4 flex flex-col bg-blue-500 text-white font-bold py-2 px-4 rounded m-auto`}
+            aria-disabled={pending}
+            // ${
+            //   isNotFormValid ? "opacity-50 cursor-not-allowed bg-blue-200 " : "hover:bg-blue-700"
+            // }`}
+            // disabled={isNotFormValid}
           >
             Soumettre le formulaire
           </button>
 
-          {isNotFormValid && (
+          {state && state.message ? (
+          <p aria-live="polite" className="text-red-500 text-center font-bold mt-4">
+            {state?.message}
+          </p>
+        ) : null}
+
+          {error && (
             <p className="text-red-500 text-center font-bold mt-4">
-              Le formulaire n'est pas rempli correctement. Veuillez remplir tous les champs.
+              {error.message}
             </p>
           )}
 
+
           <div>
             {formSubmitted && (
-              <p className="text-green-500 text-center font-bold mt-4">Le formulaire a bien été envoyé !</p>
-            )}
-
-            {error && (
-              <p className="text-red-500 text-center font-bold mt-4">
-                Il y a eu une erreur lors de l'envoi du formulaire
+              <p className="text-green-500 text-center font-bold mt-4">
+                Le formulaire a bien été envoyé !
               </p>
             )}
+
           </div>
         </form>
       </div>
