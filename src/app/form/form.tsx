@@ -127,7 +127,7 @@ export default function FormComponent() {
                 <FormItem>
                   <FormLabel>Number of Weeks</FormLabel>
                   <FormControl>
-                    <Input type="number" {...register('age', { valueAsNumber: true })} placeholder="exemple : 20 weeks  "  {...field} />
+                    <Input type="number" placeholder="exemple : 20 weeks  "  {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
