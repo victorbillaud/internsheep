@@ -27,7 +27,7 @@ interface MainNavProps {
 
 export function DashboardNav({items, session}: MainNavProps) {
   return (
-    <div className="absolute top-0 left-0 right-0 z-50 flex items-center justify-between px-8 py-4 bg-white backdrop-blur-md shadow-sm">
+    <div className="absolute top-0 left-0 right-0 z-50 flex items-center justify-between py-4 bg-white backdrop-blur-md px-56 shadow-sm">
       <Link href="/" className="flex items-center space-x-2">
         <span className="inline-block font-bold">{"Internship"} </span>
         <AdminBadge />

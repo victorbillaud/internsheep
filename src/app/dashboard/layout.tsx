@@ -13,7 +13,7 @@ export default async function DashboardLayout({children}: {children: React.React
         ]}
         session={session}
       />
-      <div className="w-full flex flex-col space-y-5 justify-center items-center mt-20 px-40">{children}</div>
+      <div className="w-full flex flex-col space-y-5 justify-center items-center mt-20 px-56">{children}</div>
     </div>
   );
 }
