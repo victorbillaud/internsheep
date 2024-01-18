@@ -30,15 +30,22 @@ import {
   SelectTrigger,
   SelectValue
 } from "@/components/ui/select";
-import UploadDocs from "@/components/UploadDocs";
-
-const fileSchema = z.instanceof(File).optional();
 
 const formSchema = z.object({
   companyName: z.string().min(1),
   mission: z.string().min(1),
-  numberWeeks: z.number().min(1),
-  remuneration: z.number().min(1),
+  numberWeeks: z.coerce
+    .number()
+    .min(1)
+    .refine((value) => !isNaN(value), {
+      message: "Must be a number"
+    }),
+  remuneration: z.coerce
+    .number()
+    .min(1)
+    .refine((value) => !isNaN(value), {
+      message: "Must be a number"
+    }),
   rythm: z.enum(["full-time", "part-time"]),
   files: z.array(z.instanceof(File).optional()),
   startDate: z.date(),
@@ -46,13 +53,7 @@ const formSchema = z.object({
 });
 
 export default function FormComponent() {
-  const [formSubmitted, setFormSubmitted] = useState(false);
-
-  type CustomError = {
-    code: string;
-    message: string;
-  };
-
+  // getting the error and success message from the url
   const searchParams = useSearchParams();
 
   const error = searchParams.get("error") as unknown as CustomError;
@@ -67,6 +68,10 @@ export default function FormComponent() {
     sendForm();
   };
 
+  const error = searchParams.get("error") as unknown as string;
+  const success = searchParams.get("success") as unknown as string;
+
+  // initializing the form
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -81,8 +86,15 @@ export default function FormComponent() {
     }
   });
 
-  // 2. Define a submit handler.
-  function onSubmit(values: z.infer<typeof formSchema>) {}
+  function onSubmit(values: z.infer<typeof formSchema>) {
+    const {startDate, endDate, ...internshipData} = values;
+
+    sendForm({
+      ...internshipData,
+      startDate: startDate.toISOString().split("T")[0],
+      endDate: endDate.toISOString().split("T")[0]
+    });
+  }
 
   return (
     <div className="h-screen bg-white">
@@ -92,8 +104,6 @@ export default function FormComponent() {
       </div>
 
       <div className="flex flex-col max-w-70  mx-auto my-auto ">
-        {error && <p className="text-red-500 text-center font-bold mt-2">{error}</p>}
-
         <Form {...form}>
           <form
             onSubmit={form.handleSubmit(onSubmit)}
@@ -167,11 +177,7 @@ export default function FormComponent() {
               </Select>
               <FormDescription>Full-time or Part-time</FormDescription>
             </FormItem>
-            <FormField
-              control={form.control}
-              name="files"
-              render={({field}) => <UploadDocs field={field} />}
-            ></FormField>
+
             <div className="flex flex-row justify-center space-x-20">
               <FormField
                 control={form.control}
