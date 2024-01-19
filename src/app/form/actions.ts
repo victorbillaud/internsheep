@@ -16,8 +16,9 @@ interface InternshipData {
   endDate: string; // date au format ISO
 }
 
-export async function sendForm(internshipData: InternshipData) {
+export async function sendForm(internshipData: InternshipData, docForm: any) {
   try {
+    await handleDocumentUpload(docForm);
     const result = await prisma.internship.create({
       data: internshipData
     });
@@ -30,10 +31,14 @@ export async function sendForm(internshipData: InternshipData) {
   redirect("/");
 }
 
-export const handleDocumentUpload = async (formData: any) => {
-  const files = formData.getAll("input-file-upload");
-  const successUploads: string[] = [];
+export const handleDocumentUpload = async (docForm: any) => {
+  const files = docForm?.getAll("files");
 
+  if (!files || files.length === 0) {
+    console.error("No files to upload");
+  }
+
+  const successUploads: string[] = [];
   const s3Client = new S3({
     region: "us-east-1",
     credentials: {
@@ -58,9 +63,12 @@ export const handleDocumentUpload = async (formData: any) => {
 
     try {
       //await s3Client.send(new PutObjectCommand(params));
-      const command = new GetObjectCommand({Bucket: "internsheep-documents", Key: fileName});
-      const url = await getSignedUrl(s3Client, command, {expiresIn: 15 * 60});
-      console.log(url);
+      // const command = new GetObjectCommand({
+      //   Bucket: "internsheep-documents",
+      //   Key: fileName
+      // });
+      // const url = await getSignedUrl(s3Client, command, {expiresIn: 15 * 60});
+      // console.log(url); // TODO: push url to db
       successUploads.push(fileName);
     } catch (error) {
       console.error("Error uploading file:", error);

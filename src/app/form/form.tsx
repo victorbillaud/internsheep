@@ -1,7 +1,6 @@
 "use client";
 import {useSearchParams} from "next/navigation";
-import {useRef, useState} from "react";
-import {sendForm} from "./actions";
+import {handleDocumentUpload, sendForm} from "./actions";
 import * as z from "zod";
 import {zodResolver} from "@hookform/resolvers/zod";
 import {useForm} from "react-hook-form";
@@ -57,8 +56,6 @@ export default function FormComponent() {
   // getting the error and success message from the url
   const searchParams = useSearchParams();
 
-  const formRef = useRef<HTMLFormElement>(null);
-
   const error = searchParams.get("error") as unknown as string;
   const success = searchParams.get("success") as unknown as string;
 
@@ -77,14 +74,24 @@ export default function FormComponent() {
     }
   });
 
-  function onSubmit(values: z.infer<typeof formSchema>) {
-    const {startDate, endDate, ...internshipData} = values;
+  async function onSubmit(values: z.infer<typeof formSchema>) {
+    const {startDate, endDate, files, ...internshipData} = values;
+    const documentsForm = new FormData();
 
-    sendForm({
-      ...internshipData,
-      startDate: startDate.toISOString().split("T")[0],
-      endDate: endDate.toISOString().split("T")[0]
+    files.forEach((file) => {
+      if (file) {
+        documentsForm.append("files", file);
+      }
     });
+
+    await sendForm(
+      {
+        ...internshipData,
+        startDate: startDate.toISOString().split("T")[0],
+        endDate: endDate.toISOString().split("T")[0]
+      },
+      documentsForm
+    );
   }
 
   return (
