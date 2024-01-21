@@ -27,5 +27,5 @@ export async function sendForm(internshipData: InternshipData) {
     redirect("/form?error=Error creatin intership")
   }
 
-  redirect("/");
+  redirect("/internships");
 }
