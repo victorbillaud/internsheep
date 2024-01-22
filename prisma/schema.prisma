@@ -15,3 +15,14 @@ model User {
   email    String @unique
   password String
 }
+
+model Internship {
+  id        Int      @id @default(autoincrement())
+  companyName String?
+  mission String?
+  startDate String?
+  endDate   String?
+  rythm String?
+  numberWeeks Int?
+  remuneration Int?
+}
