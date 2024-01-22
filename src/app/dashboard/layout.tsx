@@ -9,11 +9,14 @@ export default async function DashboardLayout({children}: {children: React.React
       <DashboardNav
         items={[
           {title: "Home", href: "/dashboard"},
-          {title: "Users", href: "/dashboard/users"}
+          {title: "Users", href: "/dashboard/users"},
+          {title: "Internships", href: "/dashboard/internships"},
         ]}
         session={session}
       />
-      <div className="w-full flex flex-col space-y-5 justify-center items-center mt-20 px-56">{children}</div>
+      <div className="w-full flex flex-col space-y-5 justify-center items-center mt-20 lg:px-56 md:px-36 sm:px-24 px-10">
+        {children}
+      </div>
     </div>
   );
 }

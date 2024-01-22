@@ -1,8 +1,5 @@
-"use client";
+"use client"
 
-import { useEffect, useState } from 'react';
-import { getInternships } from "./action";
-import { Internship } from "@prisma/client";
 import {
     Table,
     TableBody,
@@ -10,8 +7,10 @@ import {
     TableHead,
     TableHeader,
     TableRow,
-} from "@/components/ui/table"
+} from "@/components/ui/table";
+import { Internship } from "@prisma/client";
 
+import { Button } from '@/components/ui/button';
 import {
     ColumnDef,
     ColumnFiltersState,
@@ -24,10 +23,9 @@ import {
     getSortedRowModel,
     useReactTable
 } from "@tanstack/react-table";
-import { Button } from '@/components/ui/button';
 import { ArrowUpDown } from 'lucide-react';
-import React from 'react';
 import Link from 'next/link';
+import React from 'react';
 
 const columns: ColumnDef<Internship>[] = [
     {
@@ -137,9 +135,11 @@ const columns: ColumnDef<Internship>[] = [
     }
 ];
 
-export default function InternshipsPage() {
+export interface InternshipsTableProps {
+    internships: Internship[];
+}
 
-    const [internships, setInternships] = useState<Internship[]>([]);
+export default function InternshipsTable({ internships }: InternshipsTableProps) {
     const [sorting, setSorting] = React.useState<SortingState>([]);
     const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([]);
     const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>({});
@@ -164,25 +164,16 @@ export default function InternshipsPage() {
         }
     });
 
-    useEffect(() => {
-        async function fetchData() {
-            const data = await getInternships();
-            console.log('data', data)
-            setInternships(data);
-        }
-        fetchData();
-    }, [])
-
     return (
 
-        <div>
-            <div className='flex flex-col space-y-2 text-center mt-8 '>
+        <div className="w-full gap-10 flex flex-col">
+            <div className='flex flex-row space-y-2 items-center justify-between text-center gap-10 mt-8 '>
                 <h1 className="text-2xl font-semibold tracking-tight">Internships</h1>
-                <Link href="/form">
-                    <Button className="absolute right-5 absolute top-8 rounded-md"> Add an internship </Button>
+                <Link href="/dashboard/form">
+                    <Button className="right-5 top-8 rounded-md"> Add an internship </Button>
                 </Link>
             </div>
-            <div className="rounded-md border m-14">
+            <div className="rounded-md border w-full">
                 <Table>
                     <TableHeader>
                         {table.getHeaderGroups().map((headerGroup) => (
@@ -205,7 +196,6 @@ export default function InternshipsPage() {
                                 <TableRow
                                     key={row.id}
                                     data-state={row.getIsSelected() && "selected"}
-                                    className={index % 2 === 0 ? 'bg-gray-100' : ''}
                                 >
                                     {row.getVisibleCells().map((cell) => (
                                         <TableCell key={cell.id}>
