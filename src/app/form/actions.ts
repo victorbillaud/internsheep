@@ -16,79 +16,93 @@ interface InternshipData {
   endDate: string; // date au format ISO
 }
 
+interface UploadResult {
+  success: boolean;
+  message: string;
+}
+
 export async function sendForm(internshipData: InternshipData, docForm: any) {
   try {
-    await handleDocumentUpload(docForm);
+    const uploadResult = await handleDocumentUpload(docForm);
+    console.log("uploadResult", uploadResult);
+
+    if (
+      !uploadResult.success &&
+      uploadResult.message !== "No files to upload, proceeding without file upload."
+    ) {
+      console.error(uploadResult.message);
+      redirect("/form?error=uploadingFiles");
+    }
+
     const result = await prisma.internship.create({
       data: internshipData
     });
     console.log("Internship created:", result);
   } catch (error) {
     console.error("Error creating internship:", error);
-    redirect("/form?error=creatinIntership");
+    redirect("/form?error=creatingInternship");
   }
 
   redirect("/");
 }
 
-export const handleDocumentUpload = async (docForm: any) => {
-  const files = docForm?.getAll("files");
-
-  if (!files || files.length === 0) {
-    console.error("No files to upload");
-  }
-
-  const successUploads: string[] = [];
-  const s3Client = new S3({
+function createS3Client(): S3 {
+  return new S3({
     region: "us-east-1",
     credentials: {
-      accessKeyId: process.env.AWS_ACCESS_KEY_ID ?? "",
+      accessKeyId: "",
       secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY ?? ""
     }
   });
+}
 
-  const uploadedFiles = files.map(async (file: any) => {
-    const fileName = file?.name;
-    const fileType = file?.type;
+export const handleDocumentUpload = async (docForm: any): Promise<UploadResult> => {
+  const files = docForm?.getAll("files");
 
-    const binaryFile = await file?.arrayBuffer();
-    const fileBuffer = Buffer.from(binaryFile);
-
-    const params = {
-      Bucket: "internsheep-documents",
-      Key: fileName,
-      Body: fileBuffer,
-      ContentType: fileType
-    };
-
-    try {
-      //await s3Client.send(new PutObjectCommand(params));
-      // const command = new GetObjectCommand({
-      //   Bucket: "internsheep-documents",
-      //   Key: fileName
-      // });
-      // const url = await getSignedUrl(s3Client, command, {expiresIn: 15 * 60});
-      // console.log(url); // TODO: push url to db
-      successUploads.push(fileName);
-    } catch (error) {
-      console.error("Error uploading file:", error);
-    }
-  });
-
-  await Promise.all(uploadedFiles);
-
-  if (successUploads.length === files.length) {
+  if (!files || files.length === 0) {
     return {
-      status: "success",
-      message: `${successUploads.length} files uploaded successfully`
+      success: true,
+      message: "No files to upload, proceeding without file upload."
     };
+  }
+
+  const s3Client = createS3Client();
+  const uploadPromises = files.map((file: File) => uploadFile(s3Client, file));
+  const uploadResults = await Promise.all(uploadPromises);
+  const failedUploads = uploadResults.filter((result) => !result.success);
+
+  if (failedUploads.length === 0) {
+    return {success: true, message: "All files uploaded"};
   } else {
-    const failedUploads = files.filter((file: any) => !successUploads.includes(file.name));
+    const failedFiles = failedUploads.map((upload) => upload.fileName).join(", ");
     return {
-      status: "error",
-      message: `Error uploading ${failedUploads.length} files out of ${
-        files.length
-      } Files: ${failedUploads.map((file: any) => file.name + ", ")}`
+      success: false,
+      message: `Failed to upload ${failedUploads.length} files: ${failedFiles}`
     };
   }
 };
+
+async function uploadFile(s3Client: S3, file: File): Promise<UploadResult> {
+  const fileName = file.name;
+  const fileType = file.type;
+  const fileBuffer = Buffer.from(await file.arrayBuffer());
+
+  const params = {
+    Bucket: "internsheep-documents",
+    Key: fileName,
+    Body: fileBuffer,
+    ContentType: fileType
+  };
+
+  try {
+    await s3Client.send(new PutObjectCommand(params));
+    const url = await getSignedUrl(s3Client, new GetObjectCommand(params), {
+      expiresIn: 60 * 10 // 10 minutes
+    });
+    console.log(`File uploaded: ${fileName} (${url})`);
+    return {success: true, message: `File uploaded: ${fileName}`};
+  } catch (error) {
+    console.error(`Error uploading file ${fileName}:`, error);
+    return {success: false, message: `Error uploading file ${fileName}`};
+  }
+}

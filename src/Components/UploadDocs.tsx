@@ -1,19 +1,21 @@
 import {useController} from "react-hook-form";
-import {Input} from "./ui/input";
 import {FormControl, FormItem, FormLabel, FormMessage} from "./ui/form";
+import {Input} from "./ui/input";
 
-export default function UploadDocs({control, name}: {control: any; name: any}) {
+type UploadDocsProps = {
+  control: any;
+  name: string;
+};
+
+export default function UploadDocs(props: Readonly<UploadDocsProps>) {
   const {
     field: {onChange, onBlur},
     fieldState: {error}
-  } = useController({
-    name,
-    control
-  });
+  } = useController(props);
 
   const handleFilesChange = (e: any) => {
     const files = Array.from(e.target.files);
-    onChange(files); // Update react-hook-form with the new files
+    onChange(files);
   };
 
   return (

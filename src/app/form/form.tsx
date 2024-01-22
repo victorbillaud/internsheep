@@ -1,9 +1,7 @@
 "use client";
-import {useSearchParams} from "next/navigation";
-import {handleDocumentUpload, sendForm} from "./actions";
-import * as z from "zod";
-import {zodResolver} from "@hookform/resolvers/zod";
-import {useForm} from "react-hook-form";
+import UploadDocs from "@/components/UploadDocs";
+import {Button} from "@/components/ui/button";
+import {Calendar} from "@/components/ui/calendar";
 import {
   Form,
   FormControl,
@@ -14,22 +12,23 @@ import {
   FormMessage
 } from "@/components/ui/form";
 import {Input} from "@/components/ui/input";
-import {Button} from "@/components/ui/button";
 import {Popover, PopoverContent, PopoverTrigger} from "@/components/ui/popover";
-import {cn} from "@/lib/utils";
-import {Calendar} from "@/components/ui/calendar";
-import {Calendar as CalendarIcon} from "lucide-react";
-import {format} from "date-fns";
 import {
   Select,
   SelectContent,
   SelectGroup,
   SelectItem,
-  SelectLabel,
   SelectTrigger,
   SelectValue
 } from "@/components/ui/select";
-import UploadDocs from "@/components/UploadDocs";
+import {cn} from "@/lib/utils";
+import {zodResolver} from "@hookform/resolvers/zod";
+import {format} from "date-fns";
+import {Calendar as CalendarIcon} from "lucide-react";
+import {useSearchParams} from "next/navigation";
+import {useForm} from "react-hook-form";
+import * as z from "zod";
+import {sendForm} from "./actions";
 
 const formSchema = z.object({
   companyName: z.string().min(1),
