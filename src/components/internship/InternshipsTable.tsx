@@ -1,9 +1,9 @@
 "use client";
 
-import {Table, TableBody, TableCell, TableHead, TableHeader, TableRow} from "@/components/ui/table";
-import {Internship} from "@prisma/client";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { Internship } from "@prisma/client";
 
-import {Button} from "@/components/ui/button";
+import { Button } from "@/components/ui/button";
 import {
   ColumnDef,
   ColumnFiltersState,
@@ -16,7 +16,7 @@ import {
   getSortedRowModel,
   useReactTable
 } from "@tanstack/react-table";
-import {ArrowUpDown} from "lucide-react";
+import { ArrowUpDown } from "lucide-react";
 import Link from "next/link";
 import React from "react";
 
@@ -161,13 +161,10 @@ export default function InternshipsTable({internships}: InternshipsTableProps) {
     <div className="w-full gap-10 flex flex-col">
       <div className="flex flex-row space-y-2 items-center justify-between text-center gap-10 mt-8 ">
         <h1 className="text-2xl font-semibold tracking-tight">Internships</h1>
-        <Link href="/dashboard/form">
+        <Link href="/dashboard/internships/form">
           <Button className="right-5 top-8 rounded-md"> Add an internship </Button>
         </Link>
       </div>
-      <div className="flex-1 text-sm text-muted-foreground">
-        <p className="text-sm">Total internships : {internships.length}</p>
-    </div>
       <div className="rounded-md border w-full">
         <Table>
           <TableHeader>
@@ -205,27 +202,6 @@ export default function InternshipsTable({internships}: InternshipsTableProps) {
             )}
           </TableBody>
         </Table>
-      </div>
-      <div className="flex items-center justify-end space-x-2 py-4">
-        <div className="space-x-2">
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => table.previousPage()}
-            disabled={!table.getCanPreviousPage()}
-          >
-            Previous
-          </Button>
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => table.nextPage()}
-            disabled={!table.getCanNextPage()}
-          >
-            Next
-          </Button>
-        </div>
-        {/* Total */}
       </div>
     </div>
   );
