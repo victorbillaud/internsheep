@@ -32,8 +32,6 @@ export default withAuth(
     const role = req.nextauth?.token?.role as User["role"];
     const path = req.nextUrl.pathname;
 
-    console.log(role, path);
-
     if (role && ROLE_PERMISSIONS[role].path.includes(path)) {
       return NextResponse.next();
     }
