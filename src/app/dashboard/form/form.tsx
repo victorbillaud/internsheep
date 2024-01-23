@@ -170,12 +170,12 @@ export default function FormComponent() {
               )}
             />
 
-            <div className="flex flex-row justify-center space-x-20 flex-wrap mx-auto">
+            <div className="flex ">
               <FormField
                 control={form.control}
                 name="startDate"
                 render={({field}) => (
-                  <FormItem className="flex flex-col w-1/3">
+                  <FormItem className="flex flex-col w-1/2">
                     <FormLabel>Start date</FormLabel>
                     <Popover>
                       <PopoverTrigger asChild>
@@ -183,7 +183,7 @@ export default function FormComponent() {
                           <Button
                             variant={"outline"}
                             className={cn(
-                              "w-[240px] pl-3 text-left font-normal",
+                              "w-[400px] pl-3 text-left font-normal",
                               !field.value && "text-muted-foreground"
                             )}
                           >
@@ -209,7 +209,7 @@ export default function FormComponent() {
                 control={form.control}
                 name="endDate"
                 render={({field}) => (
-                  <FormItem className="flex flex-col w-1/3">
+                  <FormItem className="flex flex-col w-1/2">
                     <FormLabel>End date</FormLabel>
                     <Popover>
                       <PopoverTrigger asChild>
@@ -217,7 +217,7 @@ export default function FormComponent() {
                           <Button
                             variant={"outline"}
                             className={cn(
-                              "w-[240px] pl-3 text-left font-normal",
+                              "w-[400px] pl-3  text-left font-normal",
                               !field.value && "text-muted-foreground"
                             )}
                           >
