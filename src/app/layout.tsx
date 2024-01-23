@@ -1,10 +1,10 @@
 import AuthProvider from "@/components/AuthProvider";
 import type { Metadata } from "next";
 import { getServerSession } from "next-auth/next";
-import { authOptions } from "./api/auth/[...nextauth]/route";
 import "./globals.css";
 
 import { Toaster } from "@/components/ui/toaster";
+import { authOptions } from "@/lib/auth";
 import { cn } from "@/lib/utils";
 import { Inter as FontSans } from "next/font/google";
 
