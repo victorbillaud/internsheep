@@ -38,17 +38,18 @@ model Session {
 }
 
 model User {
-  id            String    @id @default(cuid())
+  id            String       @id @default(cuid())
   name          String?
   firstname     String?
   lastname      String?
   password      String?
-  role          Role      @default(ADMIN)
-  email         String?   @unique
+  role          Role         @default(ADMIN)
+  email         String?      @unique
   emailVerified DateTime?
   image         String?
   accounts      Account[]
   sessions      Session[]
+  Internship    Internship[]
 }
 
 model VerificationToken {
@@ -74,4 +75,7 @@ model Internship {
   rythm        String?
   numberWeeks  Int?
   remuneration Int?
+  userId       String
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
