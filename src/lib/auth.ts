@@ -7,7 +7,7 @@ import CredentialsProvider from "next-auth/providers/credentials";
 export const authOptions: NextAuthOptions = {
   adapter: PrismaAdapter(prisma),
   pages: {
-    signIn: "/login"
+    signIn: "/auth/login"
   },
   session: {
     strategy: "jwt"
