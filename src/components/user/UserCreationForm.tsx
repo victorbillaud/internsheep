@@ -10,12 +10,12 @@ import { Button } from "../ui/button";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "../ui/form";
 import { Input } from "../ui/input";
 import {
-    Select,
-    SelectContent,
-    SelectGroup,
-    SelectItem,
-    SelectTrigger,
-    SelectValue
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectTrigger,
+  SelectValue
 } from "../ui/select";
 import { useToast } from "../ui/use-toast";
 import { createUser } from "./actions";
@@ -55,6 +55,10 @@ export function UserCreationForm({closeDialog}: UserCreationFormProps) {
   });
 
   useEffect(() => {
+    if (!state) {
+      return;
+    }
+
     if (state.user) {
       toast({
         title: "User created",
@@ -63,6 +67,11 @@ export function UserCreationForm({closeDialog}: UserCreationFormProps) {
       closeDialog();
     } else if (state.message) {
       setError(state.message);
+      toast({
+        title: "Error",
+        description: state.message,
+        variant: "destructive"
+      });
     }
   }, [state]);
 
