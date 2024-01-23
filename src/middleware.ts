@@ -14,7 +14,7 @@ export default async function middleware(req: NextRequest) {
     secret: process.env.NEXTAUTH_SECRET
   });
 
-  if (!session && path === "/dashboard") {
+  if (!session && path.startsWith("/dashboard")) {
     return NextResponse.redirect(new URL("/auth/login", req.url));
   } else if (session && (path === "/auth/login" || path === "/auth/register")) {
     return NextResponse.redirect(new URL("/dashboard", req.url));

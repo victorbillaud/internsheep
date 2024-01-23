@@ -40,6 +40,13 @@ export const authOptions: NextAuthOptions = {
     async session({session, token}) {
       session.user = token.loggedUser;
       return session;
+    },
+    async signIn({account, user}) {
+      if (account) {
+        account.userData = user; // pass value down to jwt callback func
+      }
+      // make sure to return true;
+      return true;
     }
   }
 };
