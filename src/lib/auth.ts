@@ -5,8 +5,6 @@ import type { NextAuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 
 export const authOptions: NextAuthOptions = {
-  // This is a temporary fix for prisma client.
-  // @see https://github.com/prisma/prisma/issues/16117
   adapter: PrismaAdapter(prisma),
   pages: {
     signIn: "/login"
@@ -36,8 +34,6 @@ export const authOptions: NextAuthOptions = {
             email: credentials.email
           }
         });
-
-        console.log("user found", user);
 
         if (!user || !(await compare(credentials.password, user.password!))) {
           return null;
