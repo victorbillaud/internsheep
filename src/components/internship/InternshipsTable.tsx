@@ -158,11 +158,13 @@ export default function InternshipsTable({internships}: InternshipsTableProps) {
   });
 
   return (
-    <div className="w-full gap-10 flex flex-col">
-      <div className="flex flex-row space-y-2 items-center justify-between text-center gap-10 mt-8 ">
+    <div className="w-full">
+      <div className="w-full flex items-center justify-between py-4">
         <h1 className="text-2xl font-semibold tracking-tight">Internships</h1>
         <Link href="/dashboard/internships/form">
-          <Button className="right-5 top-8 rounded-md"> Add an internship </Button>
+          <Button variant="default" size="sm" className="ml-auto">
+            Add an internship
+          </Button>
         </Link>
       </div>
       <div className="rounded-md border w-full">
