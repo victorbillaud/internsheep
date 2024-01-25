@@ -1,7 +1,10 @@
 "use client";
-import UploadDocs from "@/components/UploadDocs";
-import {Button} from "@/components/ui/button";
-import {Calendar} from "@/components/ui/calendar";
+
+import {useSearchParams} from "next/navigation";
+import {sendForm} from "./actions";
+import * as z from "zod";
+import {zodResolver} from "@hookform/resolvers/zod";
+import {useForm} from "react-hook-form";
 import {
   Form,
   FormControl,
@@ -12,7 +15,12 @@ import {
   FormMessage
 } from "@/components/ui/form";
 import {Input} from "@/components/ui/input";
+import {Button} from "@/components/ui/button";
 import {Popover, PopoverContent, PopoverTrigger} from "@/components/ui/popover";
+import {cn} from "@/lib/utils";
+import {Calendar} from "@/components/ui/calendar";
+import {Calendar as CalendarIcon} from "lucide-react";
+import {format} from "date-fns";
 import {
   Select,
   SelectContent,
@@ -21,14 +29,7 @@ import {
   SelectTrigger,
   SelectValue
 } from "@/components/ui/select";
-import {cn} from "@/lib/utils";
-import {zodResolver} from "@hookform/resolvers/zod";
-import {format} from "date-fns";
-import {Calendar as CalendarIcon} from "lucide-react";
-import {useSearchParams} from "next/navigation";
-import {useForm} from "react-hook-form";
-import * as z from "zod";
-import {sendForm} from "./actions";
+import UploadDocs from "@/components/UploadDocs";
 
 const formSchema = z.object({
   companyName: z.string().min(1),
@@ -54,7 +55,6 @@ const formSchema = z.object({
 export default function FormComponent() {
   // getting the error and success message from the url
   const searchParams = useSearchParams();
-
   const error = searchParams.get("error") as unknown as string;
   const success = searchParams.get("success") as unknown as string;
 
@@ -73,7 +73,7 @@ export default function FormComponent() {
     }
   });
 
-  async function onSubmit(values: z.infer<typeof formSchema>) {
+  function onSubmit(values: z.infer<typeof formSchema>) {
     const {startDate, endDate, files, ...internshipData} = values;
     const documentsForm = new FormData();
 
@@ -83,7 +83,7 @@ export default function FormComponent() {
       }
     });
 
-    await sendForm(
+    sendForm(
       {
         ...internshipData,
         startDate: startDate.toISOString().split("T")[0],
@@ -176,7 +176,7 @@ export default function FormComponent() {
             </FormItem>
             <UploadDocs control={form.control} name="files" />
 
-            <div className="flex flex-row justify-center space-x-20">
+            <div className="flex flex-row justify-center space-x-20 flex-wrap mx-auto">
               <FormField
                 control={form.control}
                 name="startDate"
@@ -246,11 +246,8 @@ export default function FormComponent() {
                 )}
               />
             </div>
-            {error && (
-              <div className="text-red-500 text-sm">
-                <p>{error}</p>
-              </div>
-            )}
+            {error && <p className="text-red-500 text-center font-bold mt-2">{error}</p>}
+            {success && <p className="text-green-500 text-center font-bold mt-2">{success}</p>}
 
             <Button className="flex text-center mx-auto mt-4" type="submit">
               Submit
