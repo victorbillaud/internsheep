@@ -18,7 +18,7 @@ import {
   SelectValue
 } from "../ui/select";
 import { useToast } from "../ui/use-toast";
-import { createUser } from "./actions";
+import { createUserAction as createUser } from "./actions";
 
 const userCreationSchema = z.object({
   firstName: z.string().min(2),

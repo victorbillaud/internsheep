@@ -1,11 +1,14 @@
 "use server";
 
+import { authOptions } from "@/lib/auth";
 import prisma from "@/lib/prisma";
+import { createUser } from "@/lib/user/services";
 import { Prisma, Role, User } from "@prisma/client";
+import { getServerSession } from "next-auth";
 import { revalidatePath } from "next/cache";
 import * as z from "zod";
 
-export async function createUser(
+export async function createUserAction(
   prevState: {
     message: string | null;
     user: User | null;
@@ -35,15 +38,19 @@ export async function createUser(
     };
   }
 
+  const session = await getServerSession(authOptions);
+
+  if (!session) {
+    throw new Error("You are not authorized to perform this action");
+  }
+
   try {
-    const response = await prisma.user.create({
-      data: {
-        firstname: validatedFields.data.firstName,
-        lastname: validatedFields.data.lastName,
-        email: validatedFields.data.email,
-        password: validatedFields.data.password,
-        role: validatedFields.data.role as Role
-      }
+    const response = await createUser(prisma, session, {
+      firstname: validatedFields.data.firstName,
+      lastname: validatedFields.data.lastName,
+      email: validatedFields.data.email,
+      password: validatedFields.data.password,
+      role: validatedFields.data.role as Role
     });
 
     revalidatePath("/dashboard/users");
