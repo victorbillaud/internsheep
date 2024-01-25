@@ -12,7 +12,7 @@ async function main() {
     }
   });
 
-  await prisma.user.create({
+  const student = await prisma.user.create({
     data: {
       email: "student@example.com",
       firstname: "Student",
@@ -29,6 +29,23 @@ async function main() {
       lastname: "Tutor",
       password: await hash("tutor", 10),
       role: "TUTOR"
+    }
+  });
+
+  await prisma.internship.create({
+    data: {
+      companyName: "Company 1",
+      mission: "Mission of internship 1",
+      startDate: new Date("2021-01-01").toISOString(),
+      endDate: new Date("2021-02-01").toISOString(),
+      rythm: "full-time",
+      numberWeeks: 4,
+      remuneration: 1000,
+      user: {
+        connect: {
+          id: student.id
+        }
+      }
     }
   });
 }

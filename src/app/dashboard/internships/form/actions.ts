@@ -1,33 +1,24 @@
 "use server";
 
 import { authOptions } from "@/lib/auth";
+import { createInternship } from "@/lib/internships/services";
 import { Prisma, PrismaClient } from "@prisma/client";
 import { getServerSession } from "next-auth";
 import { redirect } from "next/navigation";
+
 const prisma = new PrismaClient();
 
-type InternshipCreateBody = Prisma.Args<typeof prisma.internship, "create">["data"];
-
-export async function sendForm(internshipData: Omit<InternshipCreateBody, "user">) {
+export async function sendForm(
+  internshipData: Omit<Prisma.Args<typeof prisma.internship, "create">["data"], "user">,
+) {
   try {
+    const prisma = new PrismaClient();
     const session = await getServerSession(authOptions);
     const user = session?.user;
-
-    const result = await prisma.internship.create({
-      data: {
-        ...internshipData,
-        user: {
-          connect: {
-            id: user?.id as string
-          }
-        }
-      }
-    });
-    console.log("Internship created:", result);
+    await createInternship(prisma, internshipData, user?.id as string);
+    redirect("/dashboard/internships");
   } catch (error) {
-    console.error("Error creating internship:", error);
-    redirect("/dashboard/internships/form?error=Error creating internship");
+    console.error(error);
+    redirect(`/dashboard/internships/form?error=${error}`);
   }
-
-  redirect("/dashboard/internships");
 }

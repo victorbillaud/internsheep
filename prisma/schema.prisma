@@ -76,6 +76,19 @@ model Internship {
   numberWeeks  Int?
   remuneration Int?
   userId       String
+  files        File[]
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model File {
+  id           Int     @id @default(autoincrement())
+  name         String?
+  type         String?
+  size         Int?
+  url          String?
+  userId       String
+  internshipId Int
+
+  internship Internship @relation(fields: [internshipId], references: [id], onDelete: Cascade)
 }
