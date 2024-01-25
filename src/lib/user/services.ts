@@ -1,7 +1,8 @@
-import { Prisma, PrismaClient } from "@prisma/client";
+import prisma from "@/lib/prisma";
+import { Prisma } from "@prisma/client";
 import { Session } from "next-auth";
 
-export async function listUsers(prisma: PrismaClient, session: Session) {
+export async function listUsers(session: Session) {
   try {
     if (session.user?.role !== "ADMIN") {
       throw new Error("You are not authorized to perform this action");
@@ -13,7 +14,6 @@ export async function listUsers(prisma: PrismaClient, session: Session) {
 }
 
 export async function createUser(
-  prisma: PrismaClient,
   session: Session,
   data: Prisma.Args<typeof prisma.user, "create">["data"]
 ) {

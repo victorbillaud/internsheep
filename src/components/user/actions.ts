@@ -1,7 +1,6 @@
 "use server";
 
 import { authOptions } from "@/lib/auth";
-import prisma from "@/lib/prisma";
 import { createUser } from "@/lib/user/services";
 import { Prisma, Role, User } from "@prisma/client";
 import { getServerSession } from "next-auth";
@@ -45,7 +44,7 @@ export async function createUserAction(
   }
 
   try {
-    const response = await createUser(prisma, session, {
+    const response = await createUser(session, {
       firstname: validatedFields.data.firstName,
       lastname: validatedFields.data.lastName,
       email: validatedFields.data.email,

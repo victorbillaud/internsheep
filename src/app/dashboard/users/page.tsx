@@ -1,6 +1,5 @@
 import { UsersTable } from "@/components/user/UsersTable";
 import { authOptions } from "@/lib/auth";
-import prisma from "@/lib/prisma";
 import { listUsers } from "@/lib/user/services";
 import { getServerSession } from "next-auth";
 
@@ -11,7 +10,7 @@ export default async function UsersPage() {
     throw new Error("Unauthorized");
   }
 
-  const users = await listUsers(prisma, session);
+  const users = await listUsers(session);
 
   return (
     <div className="w-full flex flex-col space-y-5 justify-center items-center">

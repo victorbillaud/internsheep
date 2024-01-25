@@ -1,6 +1,7 @@
-import { Prisma, PrismaClient } from "@prisma/client";
+import prisma from "@/lib/prisma";
+import { Prisma } from "@prisma/client";
 
-export async function listInternships(prisma: PrismaClient) {
+export async function listInternships() {
   try {
     return await prisma.internship.findMany();
   } catch (error) {
@@ -8,7 +9,7 @@ export async function listInternships(prisma: PrismaClient) {
   }
 }
 
-export async function getInternship(prisma: PrismaClient, id: number) {
+export async function getInternship(id: number) {
   try {
     return await prisma.internship.findUnique({
       where: {id}
@@ -19,7 +20,6 @@ export async function getInternship(prisma: PrismaClient, id: number) {
 }
 
 export async function createInternship(
-  prisma: PrismaClient,
   data: Omit<Prisma.Args<typeof prisma.internship, "create">["data"], "user">,
   userId: string
 ) {
