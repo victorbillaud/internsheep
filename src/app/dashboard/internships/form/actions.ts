@@ -4,24 +4,37 @@ import {authOptions} from "@/lib/auth";
 import {Prisma, PrismaClient} from "@prisma/client";
 import {getServerSession} from "next-auth";
 import {redirect} from "next/navigation";
-import {S3} from "@aws-sdk/client-s3";
-import {PutObjectCommand, GetObjectCommand} from "@aws-sdk/client-s3";
+import {S3, PutObjectCommand, GetObjectCommand} from "@aws-sdk/client-s3";
 import {getSignedUrl} from "@aws-sdk/s3-request-presigner";
 const prisma = new PrismaClient();
 
 type InternshipCreateBody = Prisma.Args<typeof prisma.internship, "create">["data"];
 
+interface Document {
+  name: string;
+  type: string;
+  size: string;
+  url: string;
+}
+
 interface UploadResult {
   success: boolean;
   message: string;
+  document?: Document;
+}
+
+interface DocumentsResult {
+  success: boolean;
+  message: string;
+  documents?: Document[];
 }
 
 export async function sendForm(
   internshipData: Omit<InternshipCreateBody, "user">,
-  documentForm: any
+  documentForm: FormData
 ) {
-  const uploadResult = await handleDocumentUpload(documentForm);
-  if (!uploadResult.success) {
+  const uploadedDocuments = await handleDocumentUpload(documentForm);
+  if (!uploadedDocuments.success) {
     redirect(`/dashboard/internships/form?error=uploadfailed`);
   }
 
@@ -32,6 +45,11 @@ export async function sendForm(
     const result = await prisma.internship.create({
       data: {
         ...internshipData,
+        documents: {
+          createMany: {
+            data: uploadedDocuments.documents ?? []
+          }
+        },
         user: {
           connect: {
             id: user?.id as string
@@ -58,8 +76,8 @@ function createS3Client(): S3 {
   });
 }
 
-export const handleDocumentUpload = async (docForm: any): Promise<UploadResult> => {
-  const files = docForm?.getAll("files");
+export const handleDocumentUpload = async (documentForm: any): Promise<DocumentsResult> => {
+  const files = documentForm?.getAll("files");
 
   if (!files || files.length === 0) {
     return {
@@ -73,20 +91,25 @@ export const handleDocumentUpload = async (docForm: any): Promise<UploadResult> 
   const uploadResults = await Promise.all(uploadPromises);
   const failedUploads = uploadResults.filter((result) => !result.success);
 
-  if (failedUploads.length === 0) {
-    return {success: true, message: "All files uploaded"};
-  } else {
-    const failedFiles = failedUploads.map((upload) => upload.fileName).join(", ");
+  if (failedUploads.length > 0) {
     return {
       success: false,
-      message: `Failed to upload ${failedUploads.length} files: ${failedFiles}`
+      message: "Failed to upload files",
+      documents: undefined
     };
   }
+
+  return {
+    success: true,
+    message: "Files uploaded successfully",
+    documents: uploadResults.filter((result) => result.success).map((result) => result.document)
+  };
 };
 
 async function uploadFile(s3Client: S3, file: File): Promise<UploadResult> {
   const fileName = file.name;
   const fileType = file.type;
+  const fileSize = file.size;
   const fileBuffer = Buffer.from(await file.arrayBuffer());
 
   const params = {
@@ -101,10 +124,18 @@ async function uploadFile(s3Client: S3, file: File): Promise<UploadResult> {
     const url = await getSignedUrl(s3Client, new GetObjectCommand(params), {
       expiresIn: 60 * 10 // 10 minutes
     });
-    console.log(`File uploaded: ${fileName} (${url})`);
-    return {success: true, message: `File uploaded: ${fileName}`};
+    return {
+      success: true,
+      message: `File uploaded: ${fileName}`,
+      document: {
+        name: fileName,
+        type: fileType,
+        size: fileSize.toString(),
+        url: url
+      }
+    };
   } catch (error) {
     console.error(`Error uploading file ${fileName}:`, error);
-    return {success: false, message: `Error uploading file ${fileName}`};
+    return {success: false, message: `Error uploading file ${fileName}`, document: undefined};
   }
 }
