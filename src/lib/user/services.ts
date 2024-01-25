@@ -1,6 +1,6 @@
-import prisma from "@/lib/prisma";
 import { Prisma } from "@prisma/client";
 import { Session } from "next-auth";
+import prisma from "../prisma";
 
 export async function listUsers(session: Session) {
   try {
@@ -32,6 +32,6 @@ export async function createUser(
     });
     return response;
   } catch (error) {
-    throw new Error(`Error while creating user: ${JSON.stringify(error)}`);
+    throw new Error(`Error while creating user`);
   }
 }

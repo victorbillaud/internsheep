@@ -1,5 +1,5 @@
-import prisma from "@/lib/prisma";
 import { Prisma } from "@prisma/client";
+import prisma from "../prisma";
 
 export async function listInternships() {
   try {
