@@ -11,16 +11,6 @@ const prisma = new PrismaClient();
 
 type InternshipCreateBody = Prisma.Args<typeof prisma.internship, "create">["data"];
 
-interface InternshipData {
-  companyName: string;
-  mission: string;
-  numberWeeks: number;
-  remuneration: number;
-  rythm: "full-time" | "part-time";
-  startDate: string; // date au format ISO
-  endDate: string; // date au format ISO
-}
-
 interface UploadResult {
   success: boolean;
   message: string;
