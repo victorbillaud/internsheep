@@ -23,6 +23,7 @@ const DocumentsDrawer = ({row}: any) => {
     link.rel = "noopener noreferrer";
     link.click();
   }
+
   const convertSize = (size: number) => {
     const sizes = ["Bytes", "KB", "MB", "GB", "TB"];
     if (size === 0) {
@@ -35,9 +36,10 @@ const DocumentsDrawer = ({row}: any) => {
   if (!documents.length) {
     return <CircleSlash2 className="text-gray-500" size={16} />;
   }
+
   return (
     <Drawer>
-      <DrawerTrigger className="text-center" asChild>
+      <DrawerTrigger className="cursor-pointer">
         <Download size={16} />
       </DrawerTrigger>
       <DrawerContent>
