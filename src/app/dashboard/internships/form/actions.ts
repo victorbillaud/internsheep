@@ -1,12 +1,12 @@
 "use server";
 
 import {authOptions} from "@/lib/auth";
-import {Prisma, PrismaClient} from "@prisma/client";
+import {Prisma} from "@prisma/client";
 import {getServerSession} from "next-auth";
 import {redirect} from "next/navigation";
 import {S3, PutObjectCommand, GetObjectCommand} from "@aws-sdk/client-s3";
 import {getSignedUrl} from "@aws-sdk/s3-request-presigner";
-const prisma = new PrismaClient();
+import prisma from "@/lib/prisma";
 
 type InternshipCreateBody = Prisma.Args<typeof prisma.internship, "create">["data"];
 
@@ -55,6 +55,9 @@ export async function sendForm(
             id: user?.id as string
           }
         }
+      },
+      include: {
+        documents: true
       }
     });
     console.log("Internship created:", result);
@@ -122,7 +125,7 @@ async function uploadFile(s3Client: S3, file: File): Promise<UploadResult> {
   try {
     await s3Client.send(new PutObjectCommand(params));
     const url = await getSignedUrl(s3Client, new GetObjectCommand(params), {
-      expiresIn: 60 * 10 // 10 minutes
+      expiresIn: 60 * 10 * 12 // 10 minutes
     });
     return {
       success: true,
