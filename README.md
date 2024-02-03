@@ -28,6 +28,10 @@ Once you have the __database running__ :
 npx prisma db seed
 ```
 
+(⬆️ this command allow to load and initialise the database)
+
+And the last for the database :
+
 ```bash
 npx prisma generate
 ```
