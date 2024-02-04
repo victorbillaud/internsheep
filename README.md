@@ -45,5 +45,9 @@ pnpm dev
 
 If everything running good, you will have our beautiful website ! 🎆
 
-## And for the futur ? 
+## And for the future ? 
+
+Given more time, we would have implemented the option to delete and edit and internship from the internship table.
+
+We would also have implemented a search engine that allows to search for a specific company for example.
 
