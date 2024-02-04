@@ -1,15 +1,13 @@
 "use server";
 
-import { PrismaClient } from '@prisma/client';
-
-const prisma = new PrismaClient();
+import prisma from "@/lib/prisma";
 
 export async function getInternships() {
-    return prisma.internship.findMany()
+  return prisma.internship.findMany({include: {documents: true}});
 }
 
 export async function getInternship(id: number) {
-    return prisma.internship.findUnique({
-        where: { id }
-    });
+  return prisma.internship.findUnique({
+    where: {id}
+  });
 }

@@ -1,7 +1,10 @@
 "use client";
 
-import {Button} from "@/components/ui/button";
-import {Calendar} from "@/components/ui/calendar";
+import {useSearchParams} from "next/navigation";
+import {sendForm} from "./actions";
+import * as z from "zod";
+import {zodResolver} from "@hookform/resolvers/zod";
+import {useForm} from "react-hook-form";
 import {
   Form,
   FormControl,
@@ -12,7 +15,12 @@ import {
   FormMessage
 } from "@/components/ui/form";
 import {Input} from "@/components/ui/input";
+import {Button} from "@/components/ui/button";
 import {Popover, PopoverContent, PopoverTrigger} from "@/components/ui/popover";
+import {cn} from "@/lib/utils";
+import {Calendar} from "@/components/ui/calendar";
+import {Calendar as CalendarIcon} from "lucide-react";
+import {format} from "date-fns";
 import {
   Select,
   SelectContent,
@@ -21,14 +29,7 @@ import {
   SelectTrigger,
   SelectValue
 } from "@/components/ui/select";
-import {cn} from "@/lib/utils";
-import {zodResolver} from "@hookform/resolvers/zod";
-import {format} from "date-fns";
-import {Calendar as CalendarIcon} from "lucide-react";
-import {useSearchParams} from "next/navigation";
-import {useForm} from "react-hook-form";
-import * as z from "zod";
-import {sendForm} from "./actions";
+import UploadDocs from "@/components/UploadDocs";
 
 const formSchema = z.object({
   companyName: z.string().min(1),
@@ -46,6 +47,7 @@ const formSchema = z.object({
       message: "Must be a number"
     }),
   rythm: z.enum(["full-time", "part-time"]),
+  files: z.array(z.instanceof(File).optional()),
   startDate: z.date(),
   endDate: z.date()
 });
@@ -65,33 +67,44 @@ export default function FormComponent() {
       numberWeeks: 0,
       remuneration: 0,
       rythm: "full-time",
+      files: [],
       startDate: new Date(),
       endDate: new Date()
     }
   });
 
   function onSubmit(values: z.infer<typeof formSchema>) {
-    const {startDate, endDate, ...internshipData} = values;
+    const {startDate, endDate, files, ...internshipData} = values;
+    const documentsForm = new FormData();
 
-    sendForm({
-      ...internshipData,
-      startDate: startDate.toISOString().split("T")[0],
-      endDate: endDate.toISOString().split("T")[0]
+    files.forEach((file) => {
+      if (file) {
+        documentsForm.append("files", file);
+      }
     });
+
+    sendForm(
+      {
+        ...internshipData,
+        startDate: startDate.toISOString().split("T")[0],
+        endDate: endDate.toISOString().split("T")[0]
+      },
+      documentsForm
+    );
   }
 
   return (
-    <div className="w-full">
+    <div className="h-screen bg-white">
       <div className="flex flex-col space-y-2 text-center mt-6">
         <h1 className="text-2xl font-semibold tracking-tight">Add an internship</h1>
         <p className="text-sm text-muted-foreground">Enter the details of your internship below</p>
       </div>
 
-      <div className="flex w-full flex-col">
+      <div className="flex flex-col max-w-70  mx-auto my-auto ">
         <Form {...form}>
           <form
             onSubmit={form.handleSubmit(onSubmit)}
-            className="space-y-4 w-full p-2 items-center"
+            className="space-y-4 w-1/2 p-2 mx-auto items-center"
           >
             <FormField
               control={form.control}
@@ -146,36 +159,29 @@ export default function FormComponent() {
                 </FormItem>
               )}
             />
-            <FormField
-              control={form.control}
-              name="rythm"
-              render={({field}) => (
-                <FormItem className="flex justify-center flex-col">
-                  <FormLabel>Rythm</FormLabel>
-                  <FormControl>
-                    <Select {...field} onValueChange={field.onChange} defaultValue={field.value}>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select a rythm" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectGroup>
-                          <SelectItem value="full-time">Full-time</SelectItem>
-                          <SelectItem value="part-time">Part-time</SelectItem>
-                        </SelectGroup>
-                      </SelectContent>
-                    </Select>
-                  </FormControl>
-                  <FormDescription>Full-time or Part-time</FormDescription>
-                </FormItem>
-              )}
-            />
+            <FormItem className="flex justify-center flex-col">
+              <FormLabel>Rythm</FormLabel>
+              <Select>
+                <SelectTrigger>
+                  <SelectValue placeholder="Select a rythm" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectGroup>
+                    <SelectItem value="full-time">Full-time</SelectItem>
+                    <SelectItem value="part-time">Part-time</SelectItem>
+                  </SelectGroup>
+                </SelectContent>
+              </Select>
+              <FormDescription>Full-time or Part-time</FormDescription>
+            </FormItem>
+            <UploadDocs control={form.control} name="files" />
 
-            <div className="flex ">
+            <div className="flex flex-row justify-center space-x-20 flex-wrap mx-auto">
               <FormField
                 control={form.control}
                 name="startDate"
                 render={({field}) => (
-                  <FormItem className="flex flex-col w-1/2">
+                  <FormItem className="flex flex-col w-1/3">
                     <FormLabel>Start date</FormLabel>
                     <Popover>
                       <PopoverTrigger asChild>
@@ -183,7 +189,7 @@ export default function FormComponent() {
                           <Button
                             variant={"outline"}
                             className={cn(
-                              "w-[400px] pl-3 text-left font-normal",
+                              "w-[240px] pl-3 text-left font-normal",
                               !field.value && "text-muted-foreground"
                             )}
                           >
@@ -209,7 +215,7 @@ export default function FormComponent() {
                 control={form.control}
                 name="endDate"
                 render={({field}) => (
-                  <FormItem className="flex flex-col w-1/2">
+                  <FormItem className="flex flex-col w-1/3">
                     <FormLabel>End date</FormLabel>
                     <Popover>
                       <PopoverTrigger asChild>
@@ -217,7 +223,7 @@ export default function FormComponent() {
                           <Button
                             variant={"outline"}
                             className={cn(
-                              "w-[400px] pl-3  text-left font-normal",
+                              "w-[240px] pl-3 text-left font-normal",
                               !field.value && "text-muted-foreground"
                             )}
                           >

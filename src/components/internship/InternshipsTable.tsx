@@ -1,9 +1,10 @@
 "use client";
 
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Internship } from "@prisma/client";
+import {Table, TableBody, TableCell, TableHead, TableHeader, TableRow} from "@/components/ui/table";
+import {Internship} from "@prisma/client";
 
-import { Button } from "@/components/ui/button";
+import {Button} from "@/components/ui/button";
+
 import {
   ColumnDef,
   ColumnFiltersState,
@@ -16,9 +17,10 @@ import {
   getSortedRowModel,
   useReactTable
 } from "@tanstack/react-table";
-import { ArrowUpDown } from "lucide-react";
+import {ArrowUpDown} from "lucide-react";
 import Link from "next/link";
 import React from "react";
+import DocumentsDrawer from "./DocumentsDrawer";
 
 const columns: ColumnDef<Internship>[] = [
   {
@@ -109,7 +111,7 @@ const columns: ColumnDef<Internship>[] = [
         </Button>
       );
     },
-    cell: ({row}) => <div className="px-4 ">{row.getValue("numberWeeks")}</div>
+    cell: ({row}) => <div className="px-4">{row.getValue("numberWeeks")}</div>
   },
   {
     accessorKey: "startDate",
@@ -140,6 +142,13 @@ const columns: ColumnDef<Internship>[] = [
       );
     },
     cell: ({row}) => <div className="lowercase px-4">{row.getValue("endDate")}</div>
+  },
+  {
+    accessorKey: "documents",
+    header: ({column}) => {
+      return <div>Document</div>;
+    },
+    cell: ({row}) => DocumentsDrawer({row})
   }
 ];
 
