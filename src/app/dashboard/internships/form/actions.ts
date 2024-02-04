@@ -24,8 +24,8 @@ export async function sendForm(internshipData: InternshipData) {
 
   } catch (error) {
     console.error("Error creating internship:", error)
-    redirect("/form?error=Error creatin intership")
+    redirect("/dashboard/form?error=Error creating internship")
   }
 
-  redirect("/internships");
+  redirect("/dashboard/internships");
 }

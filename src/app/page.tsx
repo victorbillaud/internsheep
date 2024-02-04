@@ -18,7 +18,7 @@ export default async function Home() {
             This is the home page for the internship project.
           </p>
 
-          <Link href="/protected">
+          <Link href="/dashboard">
             <p className="text-stone-600 text-lg">Go to protected page</p>
           </Link>
 
