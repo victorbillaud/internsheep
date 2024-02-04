@@ -113,7 +113,7 @@ async function uploadFile(s3Client: S3, file: File): Promise<UploadResult> {
   try {
     await s3Client.send(new PutObjectCommand(params));
     const url = await getSignedUrl(s3Client, new GetObjectCommand(params), {
-      expiresIn: 60 * 10 * 12 // 10 minutes
+      expiresIn: 60 * 60 * 24 * 7 // 7 jours
     });
     return {
       success: true,
