@@ -13,10 +13,10 @@ export default function SignOut() {
       >
         Sign out
       </button>
-
-      <div className="text-white text-lg">
+    
+      {/* <div className="text-white text-lg">
         {session.data?.user?.email}
-      </div>
+      </div> */}
     </div>
   );
 }

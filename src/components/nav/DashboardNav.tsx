@@ -2,6 +2,7 @@ import { cn } from "@/lib/utils";
 import { Session } from "next-auth";
 import Link from "next/link";
 import { Badge } from "../ui/badge";
+import SignOut from "@/components/SignOut";
 
 export interface NavItem {
   title: string;
@@ -30,7 +31,7 @@ export function DashboardNav({items, session}: MainNavProps) {
 
   return (
     <div className="absolute top-0 left-0 right-0 z-50 flex items-center justify-between py-4 bg-white backdrop-blur-md lg:px-56 md:px-36 sm:px-24 px-10 shadow-sm">
-      <Link href="/" className="flex items-center space-x-2">
+      <Link href="/dashboard" className="flex items-center space-x-2">
         <span className="inline-block font-bold">{"Internship"} </span>
         {isAdmin && <Badge variant="destructive">Admin</Badge>}
       </Link>
@@ -53,6 +54,7 @@ export function DashboardNav({items, session}: MainNavProps) {
                   </Link>
                 )
             )}
+            { <SignOut /> }
         </nav>
       ) : null}
     </div>
