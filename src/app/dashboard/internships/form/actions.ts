@@ -6,7 +6,7 @@ import { Prisma } from "@prisma/client";
 import { getServerSession } from "next-auth";
 import { redirect } from "next/navigation";
 
-
+import { createInternship } from "@/lib/internships/services";
 import { GetObjectCommand, PutObjectCommand, S3 } from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 
@@ -35,38 +35,28 @@ export async function sendForm(
   internshipData: Omit<InternshipCreateBody, "user">,
   documentForm: FormData
 ) {
-  const uploadedDocuments = await handleDocumentUpload(documentForm);
-  if (!uploadedDocuments.success) {
-    redirect(`/dashboard/internships/form?error=uploadfailed`);
-  }
-
   try {
+    const uploadedDocuments = await handleDocumentUpload(documentForm);
+    if (!uploadedDocuments.success) {
+      throw new Error(uploadedDocuments.message);
+    }
+
     const session = await getServerSession(authOptions);
     const user = session?.user;
 
-    const result = await prisma.internship.create({
-      data: {
-        ...internshipData,
-        documents: {
-          createMany: {
-            data: uploadedDocuments.documents ?? []
-          }
-        },
-        user: {
-          connect: {
-            id: user?.id as string
-          }
-        }
-      },
-      include: {
-        documents: true
-      }
-    });
-    console.log("Internship created:", result);
+    console.log("User:", user);
+
+    if (!user) {
+      throw new Error("User not found");
+    }
+
+    await createInternship(internshipData, user?.id, uploadedDocuments.documents);
   } catch (error) {
     console.error(error);
     redirect(`/dashboard/internships/form?error=${error}`);
   }
+
+  redirect(`/dashboard/internships/`);
 }
 
 function createS3Client(): S3 {

@@ -11,6 +11,6 @@ export default async function InternshipsPage() {
   }
 
   const internships = await listInternships(session);
-
+  
   return <InternshipsTable internships={internships} />;
 }
