@@ -1,4 +1,4 @@
-version: '3'
+version: "3"
 
 # app services
 services:
@@ -23,3 +23,14 @@ services:
 
     volumes:
       - "./db:/var/lib/postgresql/data"
+
+  tests-db:
+    image: postgres:14-alpine
+    restart: always
+    container_name: integration-tests-prisma
+    ports:
+      - "5433:5432"
+    environment:
+      POSTGRES_USER: prisma
+      POSTGRES_PASSWORD: prisma
+      POSTGRES_DB: tests

@@ -1,21 +1,9 @@
-// import SignOut from "@/components/SignOut";
 import { Button } from "@/components/ui/button";
-import { authOptions } from "@/lib/auth";
-import { getServerSession } from "next-auth";
 import Link from "next/link";
-// import imageEfrei  from "@/public/efrei-diplome.jpg";
 
 export default async function Home() {
-  const session = await getServerSession(authOptions);
-  const user = session?.user;
-
-  console.log(user);
-
   return (
     <div className="h-full w-screen">
-      {/* <SignOut /> */}
-      {/* <Button>Test</Button> */}
-
       <div className="w-screen flex">
         <div className="h-full w-1/2  inline-flex items-center justify-center ">
           <div className="flex-col ">
@@ -42,7 +30,11 @@ export default async function Home() {
         <div className="w-1/2" dir="drl">
           <div className="flex mt-4 items-center justify-center rounded-s-[30%] w-[50vw] h-[78vh] bg-gradient-to-br from-blue-200 to-red-300 text-white">
             <div className=" absolute flex mt-4 items-center justify-center rounded w-[40vw] h-[40vh] mr-48">
-              <img className="rounded blur-md invert drop-shadow-xl md:filter-none" src="/efrei-diplome.jpg" alt="education" />
+              <img
+                className="rounded blur-md invert drop-shadow-xl md:filter-none"
+                src="/efrei-diplome.jpg"
+                alt="education"
+              />
             </div>
           </div>
         </div>

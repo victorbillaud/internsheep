@@ -1,9 +1,18 @@
-import { getInternships } from "./action";
-
 import InternshipsTable from "@/components/internship/InternshipsTable";
+import { authOptions } from "@/lib/auth";
+import { listInternships } from "@/lib/internships/services";
+import { getServerSession } from "next-auth";
 
 export default async function InternshipsPage() {
-  const internships = await getInternships();
+  const session = await getServerSession(authOptions);
 
-  return <InternshipsTable internships={internships} />;
+  if (!session) {
+    throw new Error("Unauthorized");
+  }
+
+  const isStudent = session?.user?.role === "STUDENT";
+
+  const internships = await listInternships(session);
+
+  return <InternshipsTable internships={internships} isStudent={isStudent} />;
 }

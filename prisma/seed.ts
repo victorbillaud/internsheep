@@ -12,7 +12,7 @@ async function main() {
     }
   });
 
-  await prisma.user.create({
+  const student = await prisma.user.create({
     data: {
       email: "student@example.com",
       firstname: "Student",

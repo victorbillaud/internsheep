@@ -1,10 +1,11 @@
 "use client";
 
-import {Table, TableBody, TableCell, TableHead, TableHeader, TableRow} from "@/components/ui/table";
-import {Internship} from "@prisma/client";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { Internship } from "@prisma/client";
 
-import {Button} from "@/components/ui/button";
+import { Button } from "@/components/ui/button";
 
+import { listInternships } from "@/lib/internships/services";
 import {
   ColumnDef,
   ColumnFiltersState,
@@ -17,12 +18,12 @@ import {
   getSortedRowModel,
   useReactTable
 } from "@tanstack/react-table";
-import {ArrowUpDown} from "lucide-react";
+import { ArrowUpDown } from "lucide-react";
 import Link from "next/link";
 import React from "react";
 import DocumentsDrawer from "./DocumentsDrawer";
 
-const columns: ColumnDef<Internship>[] = [
+const columns: ColumnDef<Awaited<ReturnType<typeof listInternships>>>[] = [
   {
     accessorKey: "companyName",
     header: ({column}) => {
@@ -54,7 +55,7 @@ const columns: ColumnDef<Internship>[] = [
     cell: ({row}) => <div className="px-4">{row.getValue("mission")}</div>
   },
   {
-    accessorKey: "userId",
+    accessorKey: "user",
     header: ({column}) => {
       return (
         <Button
@@ -66,7 +67,10 @@ const columns: ColumnDef<Internship>[] = [
         </Button>
       );
     },
-    cell: ({row}) => <div className="px-4">{row.getValue("userId")}</div>
+    cell: ({row}) => {
+      const user = row.getValue("user") as {email: string};
+      return <div className="px-4">{user.email}</div>;
+    }
   },
   {
     accessorKey: "remuneration",
@@ -153,10 +157,11 @@ const columns: ColumnDef<Internship>[] = [
 ];
 
 export interface InternshipsTableProps {
-  internships: Internship[];
+  internships: Awaited<ReturnType<typeof listInternships>>;
+  isStudent?: boolean;
 }
 
-export default function InternshipsTable({internships}: InternshipsTableProps) {
+export default function InternshipsTable({internships, isStudent}: InternshipsTableProps) {
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([]);
   const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>({});
@@ -185,11 +190,13 @@ export default function InternshipsTable({internships}: InternshipsTableProps) {
     <div className="w-full">
       <div className="w-full flex items-center justify-between py-4">
         <h1 className="text-2xl font-semibold tracking-tight">Internships</h1>
-        <Link href="/dashboard/internships/form">
-          <Button variant="default" size="sm" className="ml-auto">
-            Add an internship
-          </Button>
-        </Link>
+        {isStudent && (
+          <Link href="/dashboard/internships/form">
+            <Button variant="default" size="sm" className="ml-auto">
+              Add an internship
+            </Button>
+          </Link>
+        )}
       </div>
       <div className="rounded-md border w-full">
         <Table>

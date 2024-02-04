@@ -1,8 +1,16 @@
 import { UsersTable } from "@/components/user/UsersTable";
-import prisma from "@/lib/prisma";
+import { authOptions } from "@/lib/auth";
+import { listUsers } from "@/lib/user/services";
+import { getServerSession } from "next-auth";
 
 export default async function UsersPage() {
-  const users = await prisma.user.findMany();
+  const session = await getServerSession(authOptions);
+
+  if (!session) {
+    throw new Error("Unauthorized");
+  }
+
+  const users = await listUsers(session);
 
   return (
     <div className="w-full flex flex-col space-y-5 justify-center items-center">
