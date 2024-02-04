@@ -157,10 +157,11 @@ const columns: ColumnDef<Awaited<ReturnType<typeof listInternships>>>[] = [
 ];
 
 export interface InternshipsTableProps {
-  internships: Internship[];
+  internships: Awaited<ReturnType<typeof listInternships>>;
+  isStudent?: boolean;
 }
 
-export default function InternshipsTable({internships}: InternshipsTableProps) {
+export default function InternshipsTable({internships, isStudent}: InternshipsTableProps) {
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([]);
   const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>({});
@@ -189,11 +190,13 @@ export default function InternshipsTable({internships}: InternshipsTableProps) {
     <div className="w-full">
       <div className="w-full flex items-center justify-between py-4">
         <h1 className="text-2xl font-semibold tracking-tight">Internships</h1>
-        <Link href="/dashboard/internships/form">
-          <Button variant="default" size="sm" className="ml-auto">
-            Add an internship
-          </Button>
-        </Link>
+        {isStudent && (
+          <Link href="/dashboard/internships/form">
+            <Button variant="default" size="sm" className="ml-auto">
+              Add an internship
+            </Button>
+          </Link>
+        )}
       </div>
       <div className="rounded-md border w-full">
         <Table>

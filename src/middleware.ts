@@ -14,7 +14,6 @@ const ROLE_PERMISSIONS: Record<string, PermissionObject> = {
       "/dashboard",
       "/dashboard/users",
       "/dashboard/internships",
-      "/dashboard/internships/form"
     ]
   },
   STUDENT: {
@@ -23,7 +22,7 @@ const ROLE_PERMISSIONS: Record<string, PermissionObject> = {
   },
   TUTOR: {
     name: "Tutor",
-    path: ["/dashboard", "/dashboard/internships", "/dashboard/internships/form"]
+    path: ["/dashboard", "/dashboard/internships"]
   }
 };
 

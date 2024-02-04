@@ -10,7 +10,9 @@ export default async function InternshipsPage() {
     throw new Error("Unauthorized");
   }
 
+  const isStudent = session?.user?.role === "STUDENT";
+
   const internships = await listInternships(session);
-  
-  return <InternshipsTable internships={internships} />;
+
+  return <InternshipsTable internships={internships} isStudent={isStudent} />;
 }
