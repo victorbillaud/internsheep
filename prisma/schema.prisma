@@ -67,7 +67,7 @@ enum Role {
 }
 
 model Internship {
-  id           Int     @id @default(autoincrement())
+  id           Int         @id @default(autoincrement())
   companyName  String?
   mission      String?
   startDate    String?
@@ -76,19 +76,17 @@ model Internship {
   numberWeeks  Int?
   remuneration Int?
   userId       String
-  files        File[]
+  documents    Documents[]
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
-model File {
-  id           Int     @id @default(autoincrement())
-  name         String?
-  type         String?
-  size         Int?
-  url          String?
-  userId       String
+model Documents {
+  id           String     @id @default(cuid())
+  name         String
+  type         String
+  size         String
+  url          String
   internshipId Int
-
-  internship Internship @relation(fields: [internshipId], references: [id], onDelete: Cascade)
+  internship   Internship @relation(fields: [internshipId], references: [id])
 }
