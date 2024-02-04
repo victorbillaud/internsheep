@@ -10,7 +10,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "test": "jest",
+    "test": "dotenv -e .env.test -- npx prisma migrate deploy && dotenv -e .env.test -- jest -i",
     "test:watch": "jest --watch"
   },
   "dependencies": {

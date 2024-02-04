@@ -1,4 +1,4 @@
-import { Internship, Role } from "@prisma/client";
+import { Role } from "@prisma/client";
 import { Session } from "next-auth";
 
 export const adminUser = {
@@ -52,8 +52,7 @@ export const studentSession: Session = {
   expires: ""
 };
 
-export const internship: Internship = {
-  id: 1,
+export const internship = {
   companyName: "Company 1",
   mission: "Mission of internship 1",
   startDate: "2021-01-01T00:00:00.000Z",
@@ -61,5 +60,14 @@ export const internship: Internship = {
   rythm: "full-time",
   numberWeeks: 4,
   remuneration: 1000,
-  userId: "3"
+};
+
+export const internship2 = {
+  companyName: "Company 2",
+  mission: "Mission of internship 2",
+  startDate: "2021-01-01T00:00:00.000Z",
+  endDate: "2021-02-01T00:00:00.000Z",
+  rythm: "full-time",
+  numberWeeks: 4,
+  remuneration: 1000,
 };

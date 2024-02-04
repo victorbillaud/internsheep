@@ -1,9 +1,28 @@
 import { Prisma } from "@prisma/client";
+import { Session } from "next-auth";
 import prisma from "../prisma";
 
-export async function listInternships() {
+export async function listInternships(session: Session) {
   try {
-    return await prisma.internship.findMany();
+    const userRole = session.user?.role;
+
+    switch (userRole) {
+      case "ADMIN":
+        return await prisma.internship.findMany();
+      case "TUTOR":
+        // TODO: filter internships by tutor
+        return await prisma.internship.findMany();
+      case "STUDENT":
+        return await prisma.internship.findMany({
+          where: {
+            user: {
+              id: session.user?.id
+            }
+          }
+        });
+      default:
+        throw new Error("You are not authorized to perform this action");
+    }
   } catch (error) {
     throw new Error("Error while fetching internships");
   }
@@ -20,7 +39,7 @@ export async function getInternship(id: number) {
 }
 
 export async function createInternship(
-  data: Omit<Prisma.Args<typeof prisma.internship, "create">["data"], "user">,
+  data: Omit<Prisma.InternshipCreateInput, "user">,
   userId: string
 ) {
   try {
@@ -36,6 +55,7 @@ export async function createInternship(
       }
     });
   } catch (error) {
+    console.log(error);
     throw new Error(`Error while creating internship with data ${JSON.stringify(data)}`);
   }
 }

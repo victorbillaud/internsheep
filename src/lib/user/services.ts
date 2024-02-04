@@ -1,4 +1,5 @@
 import { Prisma } from "@prisma/client";
+import { hash } from "bcrypt";
 import { Session } from "next-auth";
 import prisma from "../prisma";
 
@@ -13,24 +14,27 @@ export async function listUsers(session: Session) {
   }
 }
 
-export async function createUser(
-  session: Session,
-  data: Prisma.Args<typeof prisma.user, "create">["data"]
-) {
+export async function createUser(session: Session, data: Prisma.UserCreateInput) {
   try {
     if (session.user?.role !== "ADMIN") {
       throw new Error("You are not authorized to perform this action");
     }
-    const response = await prisma.user.create({
+
+    if (!data?.password) {
+      throw new Error("Password is required");
+    }
+
+    const hashedPassword = await hash(data?.password, 10);
+
+    return prisma.user.create({
       data: {
         firstname: data?.firstname,
         lastname: data?.lastname,
         email: data?.email,
-        password: data?.password,
+        password: hashedPassword,
         role: data?.role
       }
     });
-    return response;
   } catch (error) {
     throw new Error(`Error while creating user`);
   }
