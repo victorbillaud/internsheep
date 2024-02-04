@@ -2,7 +2,7 @@
 
 ## Getting Started | HOW TO SETUP 👷‍♂️
 
-The project is currently in **Nuxt.js**; You will need to have pnpm installed to our system.
+The project is currently in **Next.js**; You will need to have pnpm installed to our system.
 
 You can follow this [tuto](https://pnpm.io/fr/next/installation).
 
