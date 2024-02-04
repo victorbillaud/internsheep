@@ -1,5 +1,7 @@
 "use client";
+import { LogOutIcon } from "lucide-react";
 import { signOut, useSession } from "next-auth/react";
+import { Button } from "./ui/button";
 
 export default function SignOut() {
 
@@ -7,16 +9,13 @@ export default function SignOut() {
 
   return (
     <div className="flex flex-col space-y-5 justify-center items-center">
-      <button
-        className="text-red-400 hover:text-stone-200 transition-all"
+      <Button
+        variant={"destructive"}
+        size={"icon"}
         onClick={() => signOut()}
       >
-        Sign out
-      </button>
-    
-      {/* <div className="text-white text-lg">
-        {session.data?.user?.email}
-      </div> */}
+        <LogOutIcon color="white" size={18} />
+      </Button>
     </div>
   );
 }
