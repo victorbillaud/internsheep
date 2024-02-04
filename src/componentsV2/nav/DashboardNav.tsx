@@ -1,8 +1,8 @@
+import SignOut from "@/componentsV2/SignOut";
 import { cn } from "@/lib/utils";
 import { Session } from "next-auth";
 import Link from "next/link";
 import { Badge } from "../ui/badge";
-import SignOut from "@/components/SignOut";
 
 export interface NavItem {
   title: string;

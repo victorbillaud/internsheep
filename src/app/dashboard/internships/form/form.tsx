@@ -1,35 +1,35 @@
 "use client";
 
-import {useSearchParams} from "next/navigation";
-import {sendForm} from "./actions";
+import UploadDocs from "@/componentsV2/UploadDocs";
+import { Button } from "@/componentsV2/ui/button";
+import { Calendar } from "@/componentsV2/ui/calendar";
+import {
+    Form,
+    FormControl,
+    FormDescription,
+    FormField,
+    FormItem,
+    FormLabel,
+    FormMessage
+} from "@/componentsV2/ui/form";
+import { Input } from "@/componentsV2/ui/input";
+import { Popover, PopoverContent, PopoverTrigger } from "@/componentsV2/ui/popover";
+import {
+    Select,
+    SelectContent,
+    SelectGroup,
+    SelectItem,
+    SelectTrigger,
+    SelectValue
+} from "@/componentsV2/ui/select";
+import { cn } from "@/lib/utils";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { format } from "date-fns";
+import { Calendar as CalendarIcon } from "lucide-react";
+import { useSearchParams } from "next/navigation";
+import { useForm } from "react-hook-form";
 import * as z from "zod";
-import {zodResolver} from "@hookform/resolvers/zod";
-import {useForm} from "react-hook-form";
-import {
-  Form,
-  FormControl,
-  FormDescription,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage
-} from "@/components/ui/form";
-import {Input} from "@/components/ui/input";
-import {Button} from "@/components/ui/button";
-import {Popover, PopoverContent, PopoverTrigger} from "@/components/ui/popover";
-import {cn} from "@/lib/utils";
-import {Calendar} from "@/components/ui/calendar";
-import {Calendar as CalendarIcon} from "lucide-react";
-import {format} from "date-fns";
-import {
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectTrigger,
-  SelectValue
-} from "@/components/ui/select";
-import UploadDocs from "@/components/UploadDocs";
+import { sendForm } from "./actions";
 
 const formSchema = z.object({
   companyName: z.string().min(1),

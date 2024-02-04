@@ -1,4 +1,4 @@
-import { UsersTable } from "@/components/user/UsersTable";
+import { UsersTable } from "@/componentsV2/user/UsersTable";
 import { authOptions } from "@/lib/auth";
 import { listUsers } from "@/lib/user/services";
 import { getServerSession } from "next-auth";

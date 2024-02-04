@@ -1,4 +1,4 @@
-import InternshipsTable from "@/components/internship/InternshipsTable";
+import InternshipsTable from "@/componentsV2/internship/InternshipsTable";
 import { authOptions } from "@/lib/auth";
 import { listInternships } from "@/lib/internships/services";
 import { getServerSession } from "next-auth";

@@ -1,9 +1,9 @@
-import AuthProvider from "@/components/AuthProvider";
+import AuthProvider from "@/componentsV2/AuthProvider";
 import type { Metadata } from "next";
 import { getServerSession } from "next-auth/next";
 import "./globals.css";
 
-import { Toaster } from "@/components/ui/toaster";
+import { Toaster } from "@/componentsV2/ui/toaster";
 import { authOptions } from "@/lib/auth";
 import { cn } from "@/lib/utils";
 import { Inter as FontSans } from "next/font/google";
