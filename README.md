@@ -19,7 +19,7 @@ You will have a postegre container running.
 Then, **sync** your database with prisma:
 
 ```bash
-pnpm prisma db push
+npx prisma db push
 ```
 
 Once you have the __database running__ : 
@@ -40,7 +40,7 @@ npx prisma generate
 Finally, run the __development server__:
 
 ```bash
-pnpm dev
+pnpm run dev
 ```
 
 If everything running good, you will have our beautiful website ! 🎆
