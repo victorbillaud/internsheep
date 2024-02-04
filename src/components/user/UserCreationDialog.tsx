@@ -1,6 +1,6 @@
 "use client";
 
-import { Button } from "@/componentsV2/ui/button";
+import { Button } from "@/components/ui/button";
 import {
     Dialog,
     DialogContent,
@@ -8,7 +8,7 @@ import {
     DialogHeader,
     DialogTitle,
     DialogTrigger
-} from "@/componentsV2/ui/dialog";
+} from "@/components/ui/dialog";
 import { useState } from "react";
 import { UserCreationForm } from "./UserCreationForm";
 

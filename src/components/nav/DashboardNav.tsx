@@ -1,4 +1,4 @@
-import SignOut from "@/componentsV2/SignOut";
+import SignOut from "@/components/SignOut";
 import { cn } from "@/lib/utils";
 import { Session } from "next-auth";
 import Link from "next/link";

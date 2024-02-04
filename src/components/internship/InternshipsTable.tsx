@@ -1,9 +1,9 @@
 "use client";
 
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/componentsV2/ui/table";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Internship } from "@prisma/client";
 
-import { Button } from "@/componentsV2/ui/button";
+import { Button } from "@/components/ui/button";
 
 import { listInternships } from "@/lib/internships/services";
 import {

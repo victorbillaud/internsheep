@@ -6,8 +6,8 @@ import {
     DrawerHeader,
     DrawerTitle,
     DrawerTrigger
-} from "@/componentsV2/ui/drawer";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/componentsV2/ui/table";
+} from "@/components/ui/drawer";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { CircleSlash2, Download } from "lucide-react";
 
 const DocumentsDrawer = ({row}: any) => {

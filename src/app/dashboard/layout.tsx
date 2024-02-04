@@ -1,4 +1,4 @@
-import { DashboardNav } from "@/componentsV2/nav/DashboardNav";
+import { DashboardNav } from "@/components/nav/DashboardNav";
 import { authOptions } from "@/lib/auth";
 import { getServerSession } from "next-auth";
 

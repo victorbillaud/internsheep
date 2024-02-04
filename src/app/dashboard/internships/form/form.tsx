@@ -1,8 +1,8 @@
 "use client";
 
-import UploadDocs from "@/componentsV2/UploadDocs";
-import { Button } from "@/componentsV2/ui/button";
-import { Calendar } from "@/componentsV2/ui/calendar";
+import UploadDocs from "@/components/UploadDocs";
+import { Button } from "@/components/ui/button";
+import { Calendar } from "@/components/ui/calendar";
 import {
     Form,
     FormControl,
@@ -11,9 +11,9 @@ import {
     FormItem,
     FormLabel,
     FormMessage
-} from "@/componentsV2/ui/form";
-import { Input } from "@/componentsV2/ui/input";
-import { Popover, PopoverContent, PopoverTrigger } from "@/componentsV2/ui/popover";
+} from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import {
     Select,
     SelectContent,
@@ -21,7 +21,7 @@ import {
     SelectItem,
     SelectTrigger,
     SelectValue
-} from "@/componentsV2/ui/select";
+} from "@/components/ui/select";
 import { cn } from "@/lib/utils";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { format } from "date-fns";
